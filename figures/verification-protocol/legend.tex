@@ -1,0 +1,61 @@
+  \coordinate (legendrow) at ([yshift=-\outerpadding]infer.south);
+  \coordinate (legendbaseline) at ([yshift=-1.3pt]legendrow);
+  \def\legenditemgap{0.55cm}
+  \def\legendgroupgap{0.95cm}
+  \def\legendkeygap{0.18cm}
+  \coordinate (legendorderstart) at (3.01,0 |- legendrow);
+  \coordinate (legendorderend) at
+    ([xshift=0.52cm]legendorderstart);
+  \draw[control] (legendorderstart) -- (legendorderend);
+  \node[font=\scriptsize,anchor=base west,inner sep=0pt] (legendorder)
+    at ([xshift=\legendkeygap]legendorderend |- legendbaseline) {Order};
+  \coordinate (legendtransferstart) at
+    ([xshift=\legenditemgap]legendorder.east |- legendrow);
+  \coordinate (legendtransferend) at
+    ([xshift=0.52cm]legendtransferstart);
+  \draw[supply] (legendtransferstart) -- (legendtransferend);
+  \node[font=\scriptsize,anchor=base west,inner sep=0pt] (legendtransfer)
+    at ([xshift=\legendkeygap]legendtransferend |- legendbaseline)
+    {Transfer};
+  \coordinate (legendcarriedstart) at
+    ([xshift=\legenditemgap]legendtransfer.east |- legendrow);
+  \coordinate (legendcarriedend) at
+    ([xshift=0.52cm]legendcarriedstart);
+  \draw[detail] (legendcarriedstart) -- (legendcarriedend);
+  \node[font=\scriptsize,anchor=base west,inner sep=0pt] (legendcarried)
+    at ([xshift=\legendkeygap]legendcarriedend |- legendbaseline) {Carry};
+  \coordinate (legendstepstart) at
+    ([xshift=\legendgroupgap]legendcarried.east |- legendrow);
+  \node[rectangle,rounded corners=1.4pt,draw=black!85,fill=white,anchor=west,
+    minimum width=0.29cm,minimum height=0.18cm,inner sep=0pt]
+    (legendstepkey) at (legendstepstart) {};
+  \node[font=\scriptsize,anchor=base west,inner sep=0pt] (legendstep)
+    at ([xshift=\legendkeygap]legendstepkey.east |- legendbaseline) {Step};
+  \coordinate (legendinternalstart) at
+    ([xshift=\legenditemgap]legendstep.east |- legendrow);
+  \node[rectangle,dotted,draw=black!85,fill=white,anchor=west,
+    minimum width=0.29cm,
+    minimum height=0.18cm,inner sep=0pt]
+    (legendinternalkey) at (legendinternalstart) {};
+  \node[font=\scriptsize,anchor=base west,inner sep=0pt] (legendinternal)
+    at ([xshift=\legendkeygap]legendinternalkey.east |- legendbaseline)
+    {Internal};
+  \coordinate (legendinputstart) at
+    ([xshift=\legenditemgap]legendinternal.east |- legendrow);
+  \node[rectangle,draw=black!85,fill=black!10,anchor=west,
+    minimum width=0.29cm,
+    minimum height=0.18cm,inner sep=0pt]
+    (legendinputkey) at (legendinputstart) {};
+  \node[font=\scriptsize,anchor=base west,inner sep=0pt] (legendinput)
+    at ([xshift=\legendkeygap]legendinputkey.east |- legendbaseline) {Input};
+  \coordinate (legendoutputstart) at
+    ([xshift=\legenditemgap]legendinput.east |- legendrow);
+  \node[rectangle,draw=black!85,fill=black!10,anchor=west,
+    minimum width=0.29cm,minimum height=0.18cm,inner sep=0pt]
+    (protocoloutputkey) at (legendoutputstart) {};
+  \draw[outputinner]
+    ([xshift=1.4pt,yshift=1.4pt]protocoloutputkey.south west) rectangle
+    ([xshift=-1.4pt,yshift=-1.4pt]protocoloutputkey.north east);
+  \node[font=\scriptsize,anchor=base west,inner sep=0pt]
+    at ([xshift=\legendkeygap]protocoloutputkey.east |- legendbaseline)
+    {Output};

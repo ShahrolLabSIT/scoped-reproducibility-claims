@@ -1,0 +1,15 @@
+.git
+.venv
+build
+*.pdf
+*.doc
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.run.xml
+__pycache__
+.ruff_cache

@@ -1,0 +1,119 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{manuscript}[2026/07/25 Report support]
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{booktabs}
+\RequirePackage{flushend}
+\RequirePackage{graphicx}
+\RequirePackage{stfloats}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,calc,fit,matrix,positioning,shapes.geometric}
+\RequirePackage{tcolorbox}
+\RequirePackage[unicode,hidelinks,bookmarks=false]{hyperref}
+\RequirePackage[backend=biber,style=ieee,sorting=none]{biblatex}
+
+% Stable metadata for the fixed-container publication comparison.
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdfsuppressptexinfo\pdfsuppressptexinfo=15\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+
+% Domain notation used by the manuscript and its figures.
+\newcommand{\verifyop}{\operatorname{\textsc{Verify}}}
+\newcommand{\bindop}{\operatorname{\textsc{Bind}}}
+\newcommand{\registerop}{\operatorname{\textsc{Register}}}
+\newcommand{\realiseop}{\operatorname{\textsc{Realise}}}
+\newcommand{\conformop}{\operatorname{\textsc{Conform}}}
+\newcommand{\eligibleop}{\operatorname{\textsc{Eligible}}}
+\newcommand{\classifyop}{\operatorname{\textsc{Classify}}}
+\newcommand{\decideop}{\operatorname{\textsc{Decide}}}
+\newcommand{\collectop}{\operatorname{\textsc{Collect}}}
+\newcommand{\scopeop}{\operatorname{\textsc{Scope}}}
+\newcommand{\contextop}{\operatorname{\textsc{Context}}}
+\newcommand{\inferop}{\operatorname{\textsc{Infer}}}
+\newcommand{\reportop}{\operatorname{\textsc{Report}}}
+
+% Report presentation is configured explicitly by main.tex.
+\newlength{\manuscript@strokewidth}
+\newlength{\manuscript@protocolboxpadding}
+\newlength{\manuscript@protocolheadertoppadding}
+\newlength{\manuscript@protocolheaderbottompadding}
+\setlength{\manuscript@protocolboxpadding}{5pt}
+\setlength{\manuscript@protocolheadertoppadding}{4pt}
+\setlength{\manuscript@protocolheaderbottompadding}{3pt}
+
+\newcommand{\ConfigureManuscript}[1]{%
+  \setlength{\manuscript@strokewidth}{#1}%
+  \newtcolorbox{statementbox}{
+    colback=white,
+    colframe=black,
+    boxrule=\manuscript@strokewidth,
+    arc=0pt,
+    left=4pt,
+    right=4pt,
+    top=3pt,
+    bottom=4pt,
+    before skip=6pt,
+    after skip=6pt
+  }%
+  \newtcolorbox{protocolbox}[1]{
+    colback=white,
+    colframe=black,
+    colbacktitle=black!8,
+    coltitle=black,
+    fonttitle=\bfseries,
+    title={##1},
+    boxrule=\manuscript@strokewidth,
+    arc=0pt,
+    left=\manuscript@protocolboxpadding,
+    right=\manuscript@protocolboxpadding,
+    toptitle=\manuscript@protocolheadertoppadding,
+    bottomtitle=\manuscript@protocolheaderbottompadding,
+    top=\manuscript@protocolboxpadding,
+    bottom=\manuscript@protocolboxpadding,
+    % Prefer stretching or shrinking the space around stages before TeX
+    % distorts the spacing around nearby section headings.
+    before skip=.75\baselineskip plus .75\baselineskip minus .4\baselineskip,
+    after skip=.75\baselineskip plus .75\baselineskip minus .4\baselineskip
+  }%
+}
+
+\newcounter{protocolstage}[subsection]
+\newif\ifprotocolstagesingle
+\newenvironment{protocolstage}[2][]{%
+  \refstepcounter{protocolstage}%
+  \begin{protocolbox}{Stage~\theprotocolstage\ --- #2}%
+  \protocolstagesinglefalse
+  \if\relax\detokenize{#1}\relax
+    \begin{enumerate}[%
+      \IEEEsetlabelwidth{(a)}%
+      \setlength{\IEEElabelindent}{0pt}%
+      \setlength{\topsep}{0pt}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\parsep}{0pt}%
+      \setlength{\itemsep}{3pt}%
+    ]%
+      \renewcommand{\labelenumi}{(\alph{enumi})}%
+      \renewcommand{\theenumi}{\theprotocolstage(\alph{enumi})}%
+      \setlength{\parskip}{0pt}%
+  \else
+    \protocolstagesingletrue
+  \fi
+}{%
+  \ifprotocolstagesingle\else
+    \end{enumerate}%
+  \fi
+  \end{protocolbox}%
+  \@endpetrue
+}
+
+% Renderer definitions. Their manuscript-level dependencies are supplied at
+% their call sites rather than read from this package.
+\input{figures/attempt-assessment-rectangular}
+\input{figures/scope-context}
+\input{figures/claim-classification}
+\input{figures/verification-protocol/figure}
+\input{figures/case-study-implementation/figure}
+\input{figures/qmnist-results/figure}
+\input{tables/release-contents}

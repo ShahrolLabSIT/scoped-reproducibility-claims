@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "id": "qmnist-reconstruction-audit",
+  "workflow": "src-case run",
+  "output": "Paired MNIST/QMNIST predictions, reconstruction audit, figure, and generated manuscript",
+  "inputs": {
+    "files": [
+      {
+        "role": "mnist_images",
+        "name": "MNIST test images",
+        "filename": "mnist-t10k-images-idx3-ubyte.gz",
+        "url": "https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz",
+        "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6",
+        "bytes": 1648877,
+        "format": "idx-gzip",
+        "idx_type": "ubyte",
+        "idx_shape": [10000, 28, 28]
+      },
+      {
+        "role": "mnist_labels",
+        "name": "MNIST test labels",
+        "filename": "mnist-t10k-labels-idx1-ubyte.gz",
+        "url": "https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz",
+        "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6",
+        "bytes": 4542,
+        "format": "idx-gzip",
+        "idx_type": "ubyte",
+        "idx_shape": [10000]
+      },
+      {
+        "role": "qmnist_images",
+        "name": "QMNIST test images",
+        "filename": "qmnist-test-images-idx3-ubyte.gz",
+        "url": "https://raw.githubusercontent.com/facebookresearch/qmnist/94061367ec2e099ea18c553c75727ecf849ddb9b/qmnist-test-images-idx3-ubyte.gz",
+        "sha256": "43fc22bf7498b8fc98de98369d72f752d0deabc280a43a7bcc364ab19e57b375",
+        "bytes": 9742279,
+        "format": "idx-gzip",
+        "idx_type": "ubyte",
+        "idx_shape": [60000, 28, 28]
+      },
+      {
+        "role": "qmnist_labels",
+        "name": "QMNIST extended test labels",
+        "filename": "qmnist-test-labels-idx2-int.gz",
+        "url": "https://raw.githubusercontent.com/facebookresearch/qmnist/94061367ec2e099ea18c553c75727ecf849ddb9b/qmnist-test-labels-idx2-int.gz",
+        "sha256": "9fbcbe594c3766fdf4f0b15c5165dc0d1e57ac604e01422608bb72c906030d06",
+        "bytes": 526800,
+        "format": "idx-gzip",
+        "idx_type": "int32",
+        "idx_shape": [60000, 8]
+      },
+      {
+        "role": "model",
+        "name": "ONNX Model Zoo MNIST-12 CNN",
+        "filename": "mnist-12.onnx",
+        "url": "https://media.githubusercontent.com/media/onnx/models/4c46cd00fbdb7cd30b6c1c17ab54f2e1f4f7b177/validated/vision/classification/mnist/model/mnist-12.onnx",
+        "source_revision": "4c46cd00fbdb7cd30b6c1c17ab54f2e1f4f7b177",
+        "sha256": "5c688690f8bacf667d4c2074af5ad0646ca328d7ab03eccf944a65b320171bdd",
+        "bytes": 26143,
+        "format": "onnx"
+      }
+    ],
+    "populations": {
+      "mnist10k": {"source": "mnist", "rows": [0, 10000], "no_exclusions": true},
+      "qmnist10k": {
+        "source": "qmnist",
+        "rows": [0, 10000],
+        "paired_with": "mnist10k",
+        "pairing": "same row index",
+        "no_exclusions": true
+      }
+    }
+  },
+  "criterion": {
+    "paired_prediction_agreement_minimum": {"numerator": 99, "denominator": 100},
+    "rule": "paired_prediction_agreement >= paired_prediction_agreement_minimum"
+  },
+  "provenance": {
+    "required": [
+      "source_digest",
+      "environment",
+      "input_hashes",
+      "command",
+      "termination",
+      "output_hashes",
+      "derivations"
+    ],
+    "profile": "https://w3id.org/ro/wfrun/workflow/0.5"
+  },
+  "claims": {
+    "container": {
+      "src_id": "SRC-container",
+      "boundary_includes": [
+        "fixed linux/amd64 container image",
+        "content-addressed model acquisition",
+        "ONNX CPU inference",
+        "paired reconstruction analysis and figure generation",
+        "LaTeX manuscript compilation"
+      ],
+      "boundary_excludes": ["model training", "MNIST construction", "QMNIST construction", "host operating system"],
+      "contexts": [
+        {"id": "container-ubuntu-22.04-x64", "runner": "ubuntu-22.04", "runner_os": "Linux", "runner_architecture": "X64"},
+        {"id": "container-ubuntu-24.04-x64", "runner": "ubuntu-24.04", "runner_os": "Linux", "runner_architecture": "X64"},
+        {"id": "container-ubuntu-24.04-arm64", "runner": "ubuntu-24.04-arm", "runner_os": "Linux", "runner_architecture": "ARM64", "emulation": "qemu-linux-amd64"}
+      ],
+      "exact_outputs": [
+        "predictions.csv",
+        "metrics.json",
+        "figure-data.json",
+        "case-study-values.tex",
+        "case-study-mnist-1.png",
+        "case-study-difference-1.png",
+        "case-study-qmnist-1.png",
+        "case-study-mnist-2.png",
+        "case-study-difference-2.png",
+        "case-study-qmnist-2.png",
+        "case-study-mnist-3.png",
+        "case-study-difference-3.png",
+        "case-study-qmnist-3.png",
+        "main.pdf"
+      ]
+    },
+    "native": {
+      "src_id": "SRC-native",
+      "boundary_includes": [
+        "Python 3.12.10 environment reconstruction",
+        "content-addressed model acquisition",
+        "ONNX CPU inference",
+        "paired reconstruction analysis and figure generation"
+      ],
+      "boundary_excludes": ["model training", "MNIST construction", "QMNIST construction", "container runtime", "LaTeX toolchain"],
+      "contexts": [
+        {"id": "native-ubuntu-24.04-x64", "runner": "ubuntu-24.04", "runner_os": "Linux", "runner_architecture": "X64"},
+        {"id": "native-windows-2025-x64", "runner": "windows-2025", "runner_os": "Windows", "runner_architecture": "X64"},
+        {"id": "native-macos-15-arm64", "runner": "macos-15", "runner_os": "macOS", "runner_architecture": "ARM64"}
+      ],
+      "exact_outputs": [
+        "predictions.csv",
+        "metrics.json",
+        "figure-data.json",
+        "case-study-values.tex",
+        "case-study-mnist-1.png",
+        "case-study-difference-1.png",
+        "case-study-qmnist-1.png",
+        "case-study-mnist-2.png",
+        "case-study-difference-2.png",
+        "case-study-qmnist-2.png",
+        "case-study-mnist-3.png",
+        "case-study-difference-3.png",
+        "case-study-qmnist-3.png"
+      ]
+    }
+  },
+  "inference_rule": {
+    "supported": "every registered context is admissible and reproduced, and every exact output has one SHA-256 digest",
+    "not_supported": "at least one admissible registered attempt is not reproduced",
+    "not_established": "a registered attempt is missing, inadmissible, or unassessable"
+  }
+}

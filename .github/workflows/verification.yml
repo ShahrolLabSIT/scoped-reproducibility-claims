@@ -1,0 +1,272 @@
+name: reproducibility-verification
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: reproducibility-verification-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-image:
+    runs-on: ubuntu-24.04
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+      packages: write
+    outputs:
+      image: ${{ steps.image.outputs.name }}
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Select the image name
+        id: image
+        shell: bash
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}/case-study" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-buildx-action@v3
+      - name: Build and publish the one assessed image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64
+          target: runtime
+          push: true
+          tags: ${{ steps.image.outputs.name }}:run-${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          provenance: mode=max
+      - name: Attest the assessed image digest
+        if: github.event.repository.visibility == 'public'
+        uses: actions/attest@v4
+        with:
+          subject-name: ${{ steps.image.outputs.name }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
+
+  container-attempt:
+    name: attempt (container) - ${{ matrix.context }}
+    needs: build-image
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-22.04
+            context: container-ubuntu-22.04-x64
+          - runner: ubuntu-24.04
+            context: container-ubuntu-24.04-x64
+          - runner: ubuntu-24.04-arm
+            context: container-ubuntu-24.04-arm64
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: amd64
+      - name: Execute the registered attempt
+        shell: bash
+        run: |
+          mkdir -p build/attempt build/inputs
+          docker run --rm --platform linux/amd64 \
+            -e "SRC_CASE_IMAGE=${{ needs.build-image.outputs.image }}@${{ needs.build-image.outputs.digest }}" \
+            -e "SRC_CASE_RUNNER_OS=${{ runner.os }}" \
+            -e "SRC_CASE_RUNNER_ARCH=${{ runner.arch }}" \
+            -v "$GITHUB_WORKSPACE/build:/workspace/build" \
+            "${{ needs.build-image.outputs.image }}@${{ needs.build-image.outputs.digest }}" \
+            run --mode container --context "${{ matrix.context }}" \
+            --cache /workspace/build/inputs \
+            --output /workspace/build/attempt --compile-paper
+      - name: Make the container record readable by the runner
+        if: always()
+        run: sudo chmod -R a+rX build/attempt
+      - name: Preserve the complete attempt record
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: attempt-${{ matrix.context }}
+          path: build/attempt
+          if-no-files-found: error
+
+  native-attempt:
+    name: attempt (native) - ${{ matrix.context }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            context: native-ubuntu-24.04-x64
+          - runner: windows-2025
+            context: native-windows-2025-x64
+          - runner: macos-15
+            context: native-macos-15-arm64
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.12.10
+          cache: pip
+      - name: Reconstruct the locked native environment
+        run: python -m pip install .
+      - name: Execute the registered attempt
+        env:
+          SRC_CASE_RUNNER_OS: ${{ runner.os }}
+          SRC_CASE_RUNNER_ARCH: ${{ runner.arch }}
+        run: >-
+          src-case run --mode native --context "${{ matrix.context }}"
+          --cache build/inputs --output build/attempt
+      - name: Preserve the complete attempt record
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: attempt-${{ matrix.context }}
+          path: build/attempt
+          if-no-files-found: error
+
+  infer:
+    needs: [build-image, container-attempt, native-attempt]
+    if: always()
+    runs-on: ubuntu-24.04
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.12.10
+      - name: Install the workflow and independent RO-Crate auditors
+        run: python -m pip install '.[audit]'
+      - name: Collect every preserved attempt
+        uses: actions/download-artifact@v5
+        with:
+          pattern: attempt-*
+          path: build/attempts
+      - name: Apply the registered inference rule
+        run: >-
+          src-case infer --attempt-root build/attempts
+          --output build/general-assessment
+      - name: Validate and inspect every available Workflow Run RO-Crate
+        if: always()
+        shell: bash
+        run: |
+          while IFS= read -r -d '' metadata; do
+            crate="${metadata%/*}"
+            rocrate-validator --no-interactive validate \
+              --profile-identifier workflow-run-crate-0.5 \
+              --skip-availability-check \
+              --cache-path build/validator-cache \
+              "$crate"
+            runcrate report "$crate"
+          done < <(find build/attempts -name ro-crate-metadata.json -print0)
+      - name: Preserve the general assessment even when the claim is unsupported
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: general-assessment
+          path: build/general-assessment
+          if-no-files-found: error
+      - name: Handle a completed rerun
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
+        shell: bash
+        run: |
+          tag="run-${GITHUB_SHA}"
+          if state=$(gh release view "$tag" --json isDraft,isImmutable \
+            --jq '"\(.isDraft) \(.isImmutable)"' 2>/dev/null); then
+            assets=$(gh release view "$tag" --json assets \
+              --jq '.assets | map(.name) | sort | join(",")')
+            if [ "$state" != "false true" ] || \
+              [ "$assets" != "SHA256SUMS,main.pdf,mnist-12.onnx,reproduction.crate.zip" ]; then
+              echo "Release $tag is not immutable with exactly four assets." >&2
+              exit 1
+            fi
+            if [ "$REPOSITORY_VISIBILITY" = "public" ]; then
+              gh release verify "$tag"
+            fi
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build the four release assets
+        if: success() && steps.release.outputs.exists == 'false'
+        run: >-
+          src-case package-release
+          --attempt-root build/attempts
+          --general-assessment build/general-assessment
+          --cache build/inputs
+          --output build/release
+          --commit "${{ github.sha }}"
+          --tag "run-${{ github.sha }}"
+          --repository "${{ github.repository }}"
+          --image "${{ needs.build-image.outputs.image }}"
+          --image-digest "${{ needs.build-image.outputs.digest }}"
+      - name: Validate the general-assessment RO-Crate
+        if: success() && steps.release.outputs.exists == 'false'
+        run: >-
+          rocrate-validator --no-interactive validate
+          --skip-availability-check
+          --cache-path build/validator-cache
+          build/release/reproduction.crate.zip
+      - name: Attest the evidence archive and its checksum manifest
+        if: >-
+          success() && steps.release.outputs.exists == 'false' &&
+          github.event.repository.visibility == 'public'
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            build/release/reproduction.crate.zip
+            build/release/SHA256SUMS
+      - name: Publish the immutable release
+        if: success() && steps.release.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
+        shell: bash
+        run: |
+          tag="run-${GITHUB_SHA}"
+          gh release create "$tag" \
+            build/release/main.pdf \
+            build/release/mnist-12.onnx \
+            build/release/reproduction.crate.zip \
+            build/release/SHA256SUMS \
+            --draft \
+            --generate-notes \
+            --latest=false \
+            --target "$GITHUB_SHA" \
+            --title "Reproducibility snapshot ${GITHUB_SHA:0:12}"
+          gh release edit "$tag" --draft=false --latest=false
+          state=$(gh release view "$tag" --json isDraft,isImmutable \
+            --jq '"\(.isDraft) \(.isImmutable)"')
+          assets=$(gh release view "$tag" --json assets \
+            --jq '.assets | map(.name) | sort | join(",")')
+          if [ "$state" != "false true" ] || \
+            [ "$assets" != "SHA256SUMS,main.pdf,mnist-12.onnx,reproduction.crate.zip" ]; then
+            echo "Published release is not immutable with exactly four assets." >&2
+            exit 1
+          fi
+          if [ "$REPOSITORY_VISIBILITY" = "public" ]; then
+            gh release verify "$tag"
+          fi

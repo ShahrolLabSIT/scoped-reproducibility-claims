@@ -1,0 +1,56 @@
+% #1: stroke width supplied by the manuscript.
+\newcommand{\ScopeContextDiagram}[1]{%
+\begingroup
+\begin{tikzpicture}[
+  font=\scriptsize,
+  draw=black!85,
+  line width=#1,
+  cell text/.style={align=center,inner sep=1pt,outer sep=0pt},
+  outer glyph/.style={draw,dashed,circle,align=center,minimum size=16mm},
+  inner glyph/.style={draw,circle,align=center,minimum size=8mm},
+  legend swatch/.style={draw,circle,minimum size=3.5mm,inner sep=0pt}
+]
+  \path[use as bounding box] (-4.30,-1.95) rectangle (4.40,4.95);
+
+  \node[cell text] at (-1.35,4.70)
+    {Context fixed};
+  \node[cell text] at (1.45,4.70)
+    {Context varied};
+  \node[cell text,anchor=east] at (-2.75,3.10)
+    {Scope fixed};
+  \node[cell text,anchor=east] at (-2.75,0.40)
+    {Scope varied};
+
+  % Base environment.
+  \node[outer glyph,fill=white] (base-outer) at (-1.35,3.10) {};
+  \node[cell text] at ([shift={(90:11mm)}]base-outer.center) {$P_r$};
+  \node[cell text] at ([shift={(90:5.7mm)}]base-outer.center) {$c_r$};
+  \node[inner glyph,fill=white] (base-inner) at (-1.35,3.10) {};
+  \node[cell text] at ([xshift=0.4pt]base-inner.center) {$b_r$};
+  \node[cell text,anchor=north] at (-1.35,2.12)
+    {(a) Estimates baseline\\variability};
+
+  % Vary the surrounding environment.
+  \node[outer glyph,fill=black!25] (outer-outer) at (1.45,3.10) {};
+  \node[inner glyph,fill=white] at (1.45,3.10) {};
+  \node[cell text,anchor=north] at (1.45,2.12)
+    {(b) Tests context sensitivity\\of one realisation};
+
+  % Vary the environment within the reproducible scope.
+  \node[outer glyph,fill=white] (inner-outer) at (-1.35,0.40) {};
+  \node[inner glyph,fill=black!25] at (-1.35,0.40) {};
+  \node[cell text,anchor=north] at (-1.35,-0.52)
+    {(c) Tests scope sensitivity\\within a context};
+
+  % Vary both regions.
+  \node[outer glyph,fill=black!25] (both-outer) at (1.45,0.40) {};
+  \node[inner glyph,fill=black!25] at (1.45,0.40) {};
+  \node[cell text,anchor=north] at (1.45,-0.52)
+    {(d) Tests scope sensitivity\\across contexts};
+
+  \node[legend swatch,fill=white] at (-1.15,-1.75) {};
+  \node[cell text,anchor=west] at (-0.87,-1.75) {Fixed};
+  \node[legend swatch,fill=black!25] at (0.65,-1.75) {};
+  \node[cell text,anchor=west] at (0.93,-1.75) {Varied};
+\end{tikzpicture}
+\endgroup}

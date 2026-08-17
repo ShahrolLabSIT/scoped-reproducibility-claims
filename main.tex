@@ -1,0 +1,324 @@
+\documentclass[conference,a4paper]{IEEEtran}
+
+\usepackage{manuscript}
+\addbibresource{references.bib}
+
+\newlength{\PaperStrokeWidth}
+\setlength{\PaperStrokeWidth}{0.65pt}
+\ConfigureManuscript{\PaperStrokeWidth}
+\brokenpenalty=10000
+\renewcommand{\IEEEkeywordsname}{Keywords}
+
+\makeatletter
+\def\ps@IEEEtitlepagestyle{%
+  \def\@oddhead{\hfil\footnotesize 2026 10\textsuperscript{th} International Conference on Mechatronics Engineering (ICOM)\hfil}%
+  \let\@evenhead\@oddhead
+  \let\@oddfoot\@empty
+  \let\@evenfoot\@empty
+}
+\makeatother
+
+\title{Scoped Reproducibility Claims: A Workflow Verification Protocol for Experimental Research}
+
+\author{%
+  \IEEEauthorblockN{Casper Marc Sluitman}
+  \IEEEauthorblockA{College of Engineering\\
+  Shibaura Institute of Technology\\
+  3-7-5 Toyosu, Koto-ku, Tokyo, Japan\\
+  \href{mailto:Casper.Sluitman@gmail.com}{Casper.Sluitman@gmail.com}}
+  \and
+  \IEEEauthorblockN{Shahrol Mohammadan}
+  \IEEEauthorblockA{College of Engineering\\
+  Shibaura Institute of Technology\\
+  3-7-5 Toyosu, Koto-ku, Tokyo, Japan\\
+  \href{mailto:mshahrol@shibaura-it.ac.jp}{mshahrol@shibaura-it.ac.jp}}
+}
+
+\hypersetup{
+  pdftitle={Scoped Reproducibility Claims: A Workflow Verification Protocol for Experimental Research},
+  pdfauthor={Casper Marc Sluitman and Shahrol Mohammadan},
+  pdfkeywords={computational reproducibility, replicability, provenance, research workflows, continuous integration, RO-Crate}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Claims of reproducibility in experimental research are often ill-defined, and consequently fail to hold in practice, even when the code and data are published with the research. We therefore present a model for formally specifying reproducibility through \emph{Scoped Reproducibility Claims (SRC)}, alongside a verification protocol for such claims. An SRC binds a target output and workflow to an explicit reproducibility boundary and provenance requirements to produce a qualified claim that can be evaluated by the same standards as other research claims. The protocol evaluates observed reproduction attempts against the SRC to produce attempt-level assessments grounded in provenance. To allow for general claims of reproducibility beyond any single observation, we introduce a complementary inference specification to compile multiple observations into a qualified general claim of reproducibility. We apply this model to an MNIST--QMNIST prediction-agreement analysis and show how this formal model can be integrated into computational research pipelines to automatically detect divergence between a workflow as executed and its reproducibility claims.
+\end{abstract}
+
+\begin{IEEEkeywords}
+computational reproducibility, replicability, provenance, research workflows, continuous
+integration, RO-Crate
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Publishing the code and data of a research workflow does not necessarily establish reproducibility. Systematic efforts to reproduce computational research frequently fail on the first attempt \autocite{nasem2019reproducibility, kim2018experimenting,samuel2024notebooks}, although practices within software engineering show that software workflows can be made easy to consistently reproduce \autocite{lamb2022reproducible,boettiger2015docker}. This indicates an issue of protocol: research gets published without formal and verifiable claims of reproducibility, so there is limited incentive to ease the effort required to reproduce results. Additionally, without any such formal claims, the extent to which a workflow depends on external unreproducible inputs is unclear.
+
+Therefore, we introduce a conceptual model for expressing claims of reproducibility as formal specifications, alongside a protocol for evaluating workflow executions against those specifications. The model represents attempt-level claims as \emph{Scoped~Reproducibility~Claims~(SRCs)} and generalisation claims through inference specifications over SRC assessment results, making reproducibility foundational to the overall research claim alongside any quantitative results. As an application of the model and protocol, we provide SRCs for a MNIST--QMNIST prediction-agreement analysis \autocite{yadav2019qmnist}, alongside supporting code and data \cite{sluitman2026src} to reproduce our analysis results.
+
+This paper thereby makes three novel contributions: (1) a conceptual model for expressing reproducibility claims as attempt-level and inference specifications, (2) a protocol for evaluating recorded workflow executions against these formal claims, and (3) a case study demonstrating and evaluating the model and protocol in practice; although the analysis in the case study is deliberately not novel, its contribution lies in the formal specification, verification, and assessment of its reproducibility.
+
+\section{Background}
+
+  \subsection{Reproducibility and Replicability}
+
+  Reproducibility and replicability are often used interchangeably, or otherwise inconsistently. Within this paper, we formally refer to a workflow as \emph{reproducible} if its executions consistently produce the same outputs given the same inputs. For \emph{replicability}, we are instead colloquially referring to research workflows that produce the same conclusions under theoretically grounded variability. While reproducibility is not necessarily a prerequisite for replicability, it does make replicability significantly easier to assess by precluding unaccounted variability. The protocol therefore supports both reproducibility and replicability in most definitions of the terms.
+
+  \subsection{Related Work}
+
+  To aid in computational reproducibility, the published code and data of a research workflow can be expanded into a research compendium, bundling all inputs required to reproduce the computational result \cite{gentleman2007}. Research compendia make the results more likely to be reproducible, though compendia do not necessarily make reproduction easy or consistent. This can be addressed with executable research compendia, containing programmed workflows alongside recoverable execution environments \cite{nuest2017}. For some programming languages, the execution environment can be made sufficiently recoverable by pinning dependencies for its package manager. However, this often does not account for system-level variability without additional tooling. For example: while Python virtual environments account for packaged dependencies, a system-level package manager is required to provide a compatible interpreter. The de facto standard within software engineering to account for most such variability are Docker containers \cite{boettiger2015docker}, implementing the OCI container standard. These containers reduce variability by bundling code with the required runtime and system requirements, making them an ideal fit for executable research compendia.
+
+  %   Open-source practice exposes the same distinction... maybe?
+
+  Research compendia should record the provenance (origin, production, and use) of their artefacts. To account for this, we adopt the entity--activity--agent model defined by W3C PROV \cite{w3cprovdm}. RO-Crate provides a specification for packaging research artefacts with metadata describing their identities, relationships, and provenance \cite{soilandreyes2022}; Workflow Run RO-Crate profiles specialise this model to describe workflow executions at different levels of granularity \cite{leo2024}. Similar to the continuous integration of software, automated workflow executions can build these packages and provide versioned assessments using regression tests or executable evaluations of any domain-specific criteria \cite{sandve2013,wilson2014}.
+
+  Scoped Reproducibility Claims do not replace these established methodologies. Rather, SRCs allow for qualified claims of reproducibility within this ecosystem, or any other --- while we use entity--activity--agent model vocabulary as common interface, SRCs can be implemented independently of the W3C PROV and RO-Crate standards.
+
+\section{Methodology}
+
+  \subsection{Conceptual Model}
+
+  The verification protocol is a general procedure parameterised by a formally defined, domain-adapted SRC. It uses the SRC to determine what must be executed, which prerequisites are outside the reproducible scope, what constitutes valid evidence, and how that evidence is assessed. Consider the following unqualified natural-language claim:
+
+  \begin{statementbox}
+    \textsl{The results of this study can be reproduced from the
+    published data and code.}
+  \end{statementbox}
+
+  This claim is concise, but consequently unbounded and imprecise. A protocol for validating this claim may inadvertently depend on undocumented choices that require inspection of the implementation. The SRC specification instead makes these choices explicit by recording them as claim parameters interpreted by the protocol. Moreover, the unqualified claim presents reproducibility as a general property of the workflow without specifying an inferential basis. To account for this, the protocol associates each SRC evaluation result with its configurations and assesses the generalisation according to an inference specification. These specifications are defined as follows:
+  \begin{align}
+    \mathrm{SRC} &= \langle X,W,B,\mathcal V\rangle,
+      \quad \mathcal V=\langle\mathcal P,\mathcal A,\delta\rangle,
+      \label{eq:src} \\
+    \mathcal I &= \langle C,R,M,g\rangle.
+      \label{eq:inference-specification}
+  \end{align}
+  $\mathrm{SRC}$ is the claim specification for an individual reproduction attempt, where:
+\begin{itemize}
+  \item $X$ is the research output being reproduced;
+  \item $W$ is the workflow producing output $X$;
+  \item $B$ is the boundary specification, defining what must be reproduced within the scope and what must be provided from outside it; and
+  \item $\mathcal V$ is the attempt-assessment specification, wherein:
+    \begin{itemize}
+      \item $\mathcal P$ specifies the provenance record required to verify an attempted execution of workflow $W$ under boundary specification $B$, including how the attempt ended and whether it conformed to $B$;
+      \item $\mathcal A$ is the contract that determines whether evidence from an attempt is eligible for assessing the reproduction of output $X$; and
+      \item $\delta$ is the decision rule applied to evidence eligible under contract $\mathcal A$ to
+        decide whether output $X$ was reproduced.
+    \end{itemize}
+  \end{itemize}
+  $\mathcal I$ is the inference specification for determining whether multiple
+  SRC evaluation results support a qualified general claim, where:
+  \begin{itemize}
+    \item $C$ determines whether an SRC evaluation occurred under conditions covered by the general claim;
+    \item $R$ defines how attempts sample those contexts;
+    \item $M$ defines how excluded, inadmissible, or otherwise unassessable attempts are accounted for; and
+    \item $g$ is the rule applied to the evaluation results to determine whether
+    they support the general claim.
+  \end{itemize}
+
+  \begin{figure}[!t]
+    \centering
+    \AttemptAssessmentDiagram{\PaperStrokeWidth}
+    \caption{Representation of an individual reproduction attempt following W3C PROV-DM \cite{w3cprovdm}: provenance Bundle $P_r$ records reproduction Activity $r$, which is associated with workflow Plan $W$, and when produced, output instance Entity $x_r$. Under contract $\mathcal A$, a dependency through $\mathcal V$ in $\mathrm{SRC}$, evidence Entity $a_r$ must be attributable to $r$, and where $x_r$ exists, trace its lineage to $x_r$.}
+    \label{fig:attempt-assessment}
+  \end{figure}
+
+  When assessing a qualified general claim, the protocol first evaluates individual reproduction attempts against the SRC and applies inference specification $\mathcal I$ to the combined assessment results. Fig.~\ref{fig:attempt-assessment} represents an individual attempt. For attempt $r$, provenance $P_r$ records an attempted execution of workflow $W$ and its termination state. When the attempt produces output instance $x_r$, $P_r$ records its generation. Under contract $\mathcal A$, evidence $a_r$ must be attributable to $r$, and where $x_r$ exists, traceable to $x_r$. Operation $\verifyop$ evaluates $P_r$ and $a_r$ against $\mathrm{SRC}$ to produce assessment result $y_r$:
+  \begin{equation}
+    y_r=\verifyop(\mathrm{SRC},P_r,a_r).
+    \label{eq:attempt-assessment}
+  \end{equation}
+  Result $y_r$ classifies the result of an attempt, so that only an admissible attempt is judged by $\delta$. For each attempt $r$, the protocol derives scope realisation $b_r$ and context realisation $c_r$ from provenance $P_r$:
+
+  \begin{figure}[!b]
+    \centering
+    \ScopeContextDiagram{\PaperStrokeWidth}
+    \caption{Experimental designs for repeated workflow assessment, where each attempt $r$ is recorded in provenance $P_r$. The inner circle represents scope realisation $b_r$, while the outer ring represents context realisation $c_r$. The shaded regions indicate which realisations vary between attempts, while unshaded regions are fixed.}
+    \label{fig:scope-context}
+  \end{figure}
+
+  \begin{equation}
+    P_r \longmapsto
+    \begin{cases}
+      b_r=\scopeop(P_r,B),\\
+      c_r=\contextop(P_r,C).
+    \end{cases}
+    \label{eq:attempt-realizations}
+  \end{equation}
+
+  Boundary specification $B$ determines the reproducible scope of an SRC, as realised in $b_r$. Each $b_r$ describes only one attempt and consequently cannot alone support a claim generalising across conditions. A general claim instead requires multiple evaluation results assessed under an inference specification $\mathcal I$. Fig.~\ref{fig:scope-context} classifies experimental designs by whether $b_r$ and $c_r$ are fixed or varied. A variable inside $B$ contributes to $b_r$; a variable inside in $P_r$ but outside $B$ contributes to $c_r$ when it is interpreted by $C$. When $b_r$ is fixed, attempts share the same scope realisation; when $c_r$ is fixed, they share the same recorded context. Claims dependent on variables not recorded in provenance $P_r$ are beyond this model, since they are not recorded and can therefore not be assessed. 
+  
+  Fig.~\ref{fig:claim-classification} shows how an arbitrary attempt $r$ relates to workflow conformance and execution context through its realised scope $b_r$ and context $c_r$. Suppose an SRC concerns a reaction sensitive to temperature, with reaction temperature inside $B$ and ambient temperature outside $B$ but recorded in $P_r$. Boundary specification $B$ prescribes the range of reaction temperatures conformant to the workflow and is therefore a constraint on individual attempts. Context specification $C$ defines the ambient-temperature ranges over which $\mathcal I$ assesses the general claim, defined to account for ambient temperature as confounder in attributing production of $X$ to the workflow. Both specifications are therefore constraints on the assessment, but $B$ applies to individual attempts whereas $C$ applies to inference across those results.
+
+  \begin{figure}[!t]
+    \centering
+    \ClaimClassificationDiagram{\PaperStrokeWidth}
+    \caption{Relationship between the scope and context realisations of attempt $r$: the band labelled $B$ consists of scope realisations conformant to the workflow, while the band labelled $C$ consists of context realisations under $\mathcal I$. The bands represent any acceptance criterion, such as measurement thresholds or categorical constraints. Their overlap satisfies both conditions, wherein the dot labelled $r(c_r,b_r)$ represents an attempt conforming to the workflow within the claim conditions.}
+    \label{fig:claim-classification}
+  \end{figure}
+
+  \subsection{Verification Protocol}
+  \label{sec:verification-protocol}
+  The protocol is a reference process for assessing the reproducibility of experimental research, expressed through the conceptual model. While it is designed to support computational workflows specifically, the protocol can be applied to any workflow execution for which the required provenance and evidence are recorded. This includes the manual enactment of physical laboratory workflows, though strict controls over context and sampling may be difficult to implement outside a digital environment. The protocol is divided into four stages subdivided into steps, corresponding to Fig.~\ref{fig:verification-protocol}:
+
+  \VerificationProtocolFigure{\PaperStrokeWidth}
+
+  \begin{protocolstage}{Bind applicable specifications}
+    \label{stage:protocol-bind}
+    \item\label{step:protocol-bind}
+      For a general claim of reproducibility, set inference selection $\mathcal J=\mathcal I$. For an attempt-level claim, set $\mathcal J=\varnothing$. Implement and apply $\bindop$ (Eq.~\eqref{eq:bind-procedure}) to resolve the dependencies required by the SRC and $\mathcal J$ and produce binding record $\kappa$.
+    \item\label{step:protocol-inputs-bound}
+      Check binding record $\kappa$ for completeness; if incomplete, return it as an input-level result to record the failure separately from any assessed attempts.
+  \end{protocolstage}
+  By resolving dependencies before any attempt is assessed, binding record $\kappa$ separates missing inputs from failed reproduction:
+  \begin{align}
+    \kappa &=\bindop(\mathrm{SRC},\mathcal J),
+      \quad \mathcal J\in \{\varnothing,\mathcal I\}.
+      \label{eq:bind-procedure}
+  \end{align}
+  These procedures specify the input--output mappings that must be implemented to apply the protocol, but the protocol itself does not prescribe any implementation for these mappings. It instead provides shared vocabulary for describing concrete implementations, as shown the case study. 
+
+  \begin{protocolstage}[single]{Register an attempt}
+    \label{stage:protocol-register}
+    \label{step:protocol-register}
+    Implement and apply $\registerop$ (Eq.~\eqref{eq:register-procedure}) to create attempt record $\rho_r$. Source description $\mathrm{source}_r$ must identify the origin of provenance record $P_r$, while selection description $\mathrm{selection}_r$ must explain how attempt $r$ was selected for assessment. When $\mathcal J=\mathcal I$, also indicate whether the selection conforms to $R$.
+  \end{protocolstage}
+  The source description $\mathrm{source}_r$ identifies whether the provenance and evidence were obtained directly from a recently terminated execution or retrieved from a preserved record. Attempt record $\rho_r$ compiles this origin with the selection description $\mathrm{selection}_r$:
+  \begin{align}
+    \rho_r &=\registerop
+      (r,\mathrm{source}_r,\mathrm{selection}_r;\mathcal J).
+      \label{eq:register-procedure}
+  \end{align}
+  Registering attempt $r$ before reproduction decision $d_r$ is resolved in step~\ref{step:protocol-decide} prevents that decision from influencing whether the attempt is included. Attempt record $\rho_r$ preserves the condition for the inclusion, so that it can be checked against $R$ when $\mathcal J=\mathcal I$.
+
+  \begin{protocolstage}{Verify one attempt}
+    \label{stage:protocol-verify}
+    \item\label{step:protocol-realise}
+      Implement and apply $\realiseop$ (Eq.~\eqref{eq:realise-procedure}) to derive attempt realisations $b_r,c_r$ from provenance record $P_r$.
+    \item\label{step:protocol-classify}
+      Implement and apply $\conformop$ and $\eligibleop$ (Eq.~\eqref{eq:assessment-checks}) to determine conformance with $B$ and evidence eligibility, respectively. Then implement and apply $\classifyop$ (Eq.~\eqref{eq:classify-procedure}) to combine both into attempt classification $q_r$.
+    \item\label{step:protocol-decide}
+      Implement and apply $\decideop$ (Eq.~\eqref{eq:decision-procedure}) to derive reproduction decision $d_r$.
+    \item\label{step:protocol-complete-verify}
+      Implement and apply $\verifyop$ (Eq.~\eqref{eq:attempt-assessment}) to assemble per-attempt assessment $y_r$ and its justification.
+  \end{protocolstage}
+  This stage is central to the protocol and involves some control flow, so Stage~\ref{stage:protocol-verify} and Fig.~\ref{fig:verification-protocol} present it differently according to their respective purposes. Whereas the enumerated steps decompose the required operations into individually executable procedures, the diagram shows how they compose within the overall protocol flow. Accordingly, $\verifyop$ encompasses the complete production of assessment $y_r$ in the diagram, while step~\ref{step:protocol-complete-verify} represents only the assembly of its results.
+
+  Procedure $\realiseop$ interprets provenance record $P_r$ under boundary specification $B$ and context specification $C$, producing scope realisation $b_r$ and context realisation $c_r$ for the attempt $r$:
+  \begin{align}
+    \langle b_r,c_r\rangle
+      &=\realiseop(P_r;B,C) \nonumber\\
+      &=\langle\scopeop(P_r,B),\contextop(P_r,C)\rangle.
+      \label{eq:realise-procedure}
+  \end{align}
+  Procedures $\conformop$ and $\eligibleop$ operationalise provenance specification $\mathcal P$ and evidence contract $\mathcal A$ from the conceptual model, producing conformance value $\chi_r$ and eligibility value $\epsilon_r$:
+  \begin{equation}
+    \begin{aligned}
+      \chi_r &= \conformop(P_r;\mathcal P,B),\\
+      \epsilon_r &= \eligibleop(a_r;\mathcal A,P_r).
+    \end{aligned}
+    \label{eq:assessment-checks}
+  \end{equation}
+  Conformance value $\chi_r$ is conformant, nonconformant, or undetermined; eligibility value $\epsilon_r$ is eligible, ineligible, or undetermined. Procedure $\classifyop$ compiles these into attempt classification $q_r$. The attempt is admissible if both checks pass, inadmissible if either check fails, and otherwise unassessable:
+  \begin{equation}
+    q_r=\classifyop(\chi_r,\epsilon_r).
+    \label{eq:classify-procedure}
+  \end{equation}
+  The resulting attempt classification $q_r$ determines whether $\decideop$ may apply decision rule $\delta$ to evidence $a_r$. It produces reproduction decision $d_r=\delta(a_r)$ only for an admissible attempt; for any other classification, $d_r=\bot$ remains undefined:
+  \begin{align}
+    d_r
+      &=\decideop(q_r,a_r;\delta) \nonumber\\
+      &=
+      \begin{cases}
+        \delta(a_r), & q_r=\mathrm{admissible},\\
+        \bot, & \text{otherwise},
+      \end{cases}
+      \label{eq:decision-procedure}
+  \end{align}
+  Procedure $\verifyop$ thereafter assembles these results and their supporting records into per-attempt assessment $y_r$, as defined in Eq.~\eqref{eq:attempt-assessment}.
+
+  \begin{protocolstage}{Collect, infer, and report}
+    \label{stage:protocol-report}
+    \item\label{step:protocol-inference-bound}
+      If $\mathcal J=\varnothing$, implement and apply $\reportop$ (Eq.~\eqref{eq:report-procedure}) to return an attempt-level report based on the lone per-attempt assessment $y_r$.
+    \item\label{step:protocol-attempts-collected}
+      Otherwise, check whether all $n$ required per-attempt assessments $y_{r_i}$ have been received; if not, repeat stages~\ref{stage:protocol-register} and~\ref{stage:protocol-verify}.
+    \item\label{step:protocol-infer-report}
+      Implement and apply $\collectop$ (Eq.~\eqref{eq:collect-procedure}) to form assessment collection $\mathcal L$, $\inferop$ (Eq.~\eqref{eq:infer-procedure}) to derive general assessment $\gamma$, and $\reportop$ (Eq.~\eqref{eq:report-procedure}) to return the general report.
+  \end{protocolstage}
+  This stage branches based on inference selection $\mathcal J$, as is shown more explicitly in Fig.~\ref{fig:verification-protocol}: when $\mathcal J=\varnothing$, the protocol returns an attempt-level report without compiling assessments; when $\mathcal J=\mathcal I$, procedure $\collectop$ compiles the per-attempt assessments required by $R$ into assessment collection $\mathcal L$:
+  \begin{equation}
+    \mathcal L
+      =\collectop\!\left(R,\langle y_{r_i}\rangle_{i=1}^{n}\right).
+    \label{eq:collect-procedure}
+  \end{equation}
+  Procedure $\inferop$ applies $M$ to account for excluded, inadmissible, or otherwise unassessable attempts in assessment collection $\mathcal L$ before $g$ determines general assessment $\gamma$:
+  \begin{equation}
+    \gamma
+      =\inferop(\mathcal I,\mathcal L)
+       =g\!\left(M(\mathcal L;C,R)\right).
+    \label{eq:infer-procedure}
+  \end{equation}
+  Procedure $\reportop$ returns the applicable report: when $\mathcal J=\varnothing$, it reports per-attempt assessment $y_r$ without inference; when $\mathcal J=\mathcal I$, it reports general assessment $\gamma$ with assessment collection $\mathcal L$:
+  \begin{equation}
+    \begin{aligned}
+      \reportop(\varnothing,y_r)
+        &\longrightarrow \text{attempt-level report},\\
+      \reportop(\mathcal I,\mathcal L,\gamma)
+        &\longrightarrow \text{general report}.
+    \end{aligned}
+    \label{eq:report-procedure}
+  \end{equation}
+  As with every component of this protocol, the representation of a report is decided by the implementation. Within the explored ecosystem, it may be represented comprehensibly as an RO-Crate, as a qualified natural-language claim linked to its supporting records, or any other qualified representation.
+
+\subsection{Case-Study}
+\label{sec:case-study}
+\begin{figure*}[!b]
+  \CaseStudyImplementationFigure{\PaperStrokeWidth}{0.95cm}
+\end{figure*}
+
+The MNIST handwritten-digit dataset was created by processing an established NIST dataset into consistently sized greyscale images, but the exact preprocessing procedure has been lost to time. The QMNIST dataset was created by applying a reconstruction of that procedure to the original NIST source images \cite{yadav2019qmnist}. We evaluate whether this reconstruction preserves the predictions of a small pre-trained MNIST classifier \cite{onnxmodelzoo2022mnist12}. This leaves model training out of the reproducible boundary, so that reproduction only requires inference and analysis rather than training, which is possible across standard hosted CI/CD runners for a model this small. As shown in Fig.~\ref{fig:case-study-implementation}, GitHub Actions automatically evaluates our claims across environments and fails the pipeline whenever a claim is no longer valid as defined. 
+
+\vspace*{2mm}
+\begin{statementbox}
+  \textbf{Scoped Reproducibility Claim.}\quad
+  \textsl{There is at least 99\% agreement between predictions of the classifier for MNIST and QMNIST sample pairs. This can be reproduced from the published data, model, and code across the containerised and uncontainerised environments evaluated here.}
+\end{statementbox}
+\vspace*{2mm}
+
+The pipeline first publishes a Docker image to the container registry under an immutable digest, providing reproductions with an exact copy of the execution environment under $B$. When all claims succeed, the manuscript is compiled from its \LaTeX{} source inside this image and the PDF is published as a GitHub Release. To account for variability outside $B$, the pipeline evaluates the claims across three containerised and three uncontainerised environments, recording each attempt using the Workflow Run RO-Crate profiles. These records are published alongside the PDF to provide provenance. 
+
+% The qualifications of the SRC are shown as data tables in Fig.~\ref{fig:case-study-implementation}.
+
+
+\section{Results}
+
+\IfFileExists{build/case-study/case-study-values.tex}{%
+  \begin{figure}[!b]
+    \centering
+    \QMNISTResultsFigure{\PaperStrokeWidth}{build/case-study}%
+    \caption{MNIST-12 prediction agreement for 10,000
+      MNIST--QMNIST pairs, showing the three pairs for which predictions
+      differed. Pixel differences marked with \textasteriskcentered{} are only
+      $1/255$, so they are shown at full contrast.}
+    \label{fig:qmnist-results}
+  \end{figure}%
+}{}
+
+As shown in Fig.~\ref{fig:qmnist-results}, across the 10,000 MNIST--QMNIST image pairs, the MNIST-12 prediction differed only three times between the original MNIST digit and the QMNIST reconstruction. This supports the prediction-agreement component of the SRC with a wide margin.
+
+This was reflected in the recorded assessments: all six registered
+attempts were admissible and met the registered criteria for a successful reproduction. Provenance shows that all three containerised attempts executed within the same image, identified by their digest, while the three uncontainerised attempts successfully recovered the Python environment on Ubuntu, Windows, and macOS. Every artefact resolved to the same digest across its three contexts, and every Workflow Run RO-Crate passed validation. 
+
+Anecdotally, the pipeline caught several cases in which a code change made an attempt inadmissible or changed a registered output. Since this document reports those claims, these failures could have hypothetically gone unnoticed and found themselves published. We received an automatic e-mail after each such commit to address the regression. This behaviour is consistent with CI/CD pipelines commonplace within software engineering, and is therefore not specific to GitHub as a platform.
+
+\section{Conclusion}
+
+Scoped Reproducibility Claims show that qualifying claims of reproducibility allows them to be evaluated by the same standards as other research claims. Such claims can be integrated into both programmatic and physical workflows, the former of which is exemplified by our QMNIST case study; where, in practice, automatically evaluating the SRC helped keep the implementation and reported claims aligned throughout development. However, while the concept is demonstrably practical, especially when applied to programmable pipelines, the amount of syntax required to specify the protocol may hinder adoption in favour of more flexible methodologies. Future work could therefore focus on the engineering challenges of developing high-level, domain-specific implementations of these concepts to preserve the coverage of the formally defined protocol, while reducing the specification burden.
+
+\printbibliography
+
+\end{document}

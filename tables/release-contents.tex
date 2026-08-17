@@ -1,0 +1,22 @@
+\newcommand{\ReleaseContentsTable}{%
+  \begin{table}[!t]
+    \caption{Generic contents of a GitHub Release.}
+    \label{tab:release-contents}
+    \centering
+    \scriptsize
+    \begin{tabular}{@{}p{0.54\columnwidth}p{0.38\columnwidth}@{}}
+      \toprule
+      \multicolumn{2}{@{}l}{\textbf{Workflow-published assets}} \\
+      \texttt{main.pdf} & manuscript \\
+      \texttt{mnist-12.onnx} & fixed model \\
+      \texttt{reproduction.crate.zip} & RO-Crate evidence \\
+      \texttt{SHA256SUMS} & checksum manifest \\
+      \midrule
+      \multicolumn{2}{@{}l}{\textbf{GitHub-provided entries}} \\
+      Source code (zip) & tagged source \\
+      Source code (tar.gz) & tagged source \\
+      Release attestation & public repositories \\
+      \bottomrule
+    \end{tabular}
+  \end{table}%
+}

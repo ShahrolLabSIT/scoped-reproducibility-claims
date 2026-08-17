@@ -1,0 +1,11 @@
+\newcommand{\CaseStudyImplementationFigure}[2]{%
+  \begingroup
+  \def\implementationstrokewidth{#1}%
+  \def\implementationgap{#2}%
+  \centering
+  \input{figures/case-study-implementation/diagram}
+  \expandafter\def\csname @captype\endcsname{figure}%
+  \caption{For every code change pushed to the \texttt{main} branch, the SRCs are automatically verified by the supporting software \cite{sluitman2026src}. The GitHub Actions diagram above shows the automated execution, while the columns below show how stages of the verification protocol are realised. The code is executed on Linux, Windows and macOS; and across three Linux runner contexts inside containers instantiated from an archived image.}
+  \label{fig:case-study-implementation}
+  \endgroup
+}

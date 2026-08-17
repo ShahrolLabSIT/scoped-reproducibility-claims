@@ -1,0 +1,55 @@
+% #1: stroke width supplied by the manuscript.
+\newcommand{\AttemptAssessmentDiagram}[1]{%
+\begingroup
+\newdimen\bundlepadding
+\newdimen\bundlespacing
+\newdimen\bundlelabelgap
+\bundlepadding=8pt
+\bundlespacing=\bundlepadding
+\multiply\bundlespacing by 2
+\bundlelabelgap=\bundlepadding
+\divide\bundlelabelgap by 2
+
+\begin{tikzpicture}[
+  font=\scriptsize,
+  draw=black!85,
+  line width=#1,
+  entity/.style={draw,ellipse,align=center,minimum width=15mm,
+    minimum height=8mm,inner sep=2pt},
+  process box/.style={draw,align=center,minimum width=16mm,
+    minimum height=8mm,inner sep=2pt,fill=black!10},
+  activity/.style={process box},
+  bundle/.style={draw,dashed,rounded corners=2pt},
+  bundle fit/.style={inner sep=\bundlepadding,outer sep=0pt},
+  relation/.style={-{Latex[length=2mm]},shorten >=1.2pt},
+  relation label/.style={inner sep=0pt,outer sep=0pt},
+  lineage/.style={dashed}
+]
+  \node[entity] (plan) at (0,0) {$W$\\Plan};
+  \node[activity,right=\bundlespacing of plan] (attempt)
+    {$r$\\Activity};
+  \node[entity,right=\bundlespacing of attempt] (output)
+    {$x_r$\\Entity};
+  \node[entity,right=\bundlespacing of output] (evidence)
+    {$a_r$\\Entity};
+
+  \draw[relation] (attempt) -- (plan);
+  \path (attempt.south) -- node[relation label,below=8pt]
+    (association-label) {wasAssociatedWith} (plan.south);
+  \draw[relation] (output) -- (attempt);
+  \path (output) -- node[relation label,above=4.25pt,pos=0.42]
+    (cardinality-label) {$0..1$} (attempt);
+  \path (output.south) -- node[relation label,below=8pt]
+    (generation-label) {wasGeneratedBy} (attempt.south);
+  \draw[relation,dashed] (evidence) -- (output);
+  \path (evidence.south) -- node[relation label,below=8pt]
+    (lineage-label) {lineage under $\mathcal A$} (output.south);
+
+  \node[bundle,bundle fit,fit=(plan)(attempt)(output)(evidence)
+    (association-label)(cardinality-label)(generation-label)(lineage-label)]
+    (bundle-box) {};
+  \node[relation label,anchor=south]
+    at ([yshift=\bundlelabelgap]bundle-box.north)
+    {Bundle $P_r$};
+\end{tikzpicture}
+\endgroup}

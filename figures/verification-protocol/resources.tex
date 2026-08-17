@@ -1,0 +1,69 @@
+  \node[inputobj] (specinput) at (inputaxis |- bind) {
+    {\bfseries Applicable specifications}\\[\boxtitlegap]
+    $\mathrm{SRC}$, Eq.~\eqref{eq:src}\\[-1pt]
+    optional $\mathcal I$, Eq.~\eqref{eq:inference-specification}};
+  \node[inputobj] (basisinput) at (inputaxis |- register) {
+    {\bfseries Registration basis}\\[\boxtitlegap]
+    new or existing attempt; source and selection basis};
+  \node[inputobj] (bundleinput) at (inputaxis |- derive) {
+    {\bfseries Provenance Bundle $P_r$}
+    (Fig.~\ref{fig:attempt-assessment})\\[\boxtitlegap]
+    terminal state and records assessed under $\mathcal P$;
+    $x_r$ when produced};
+  \coordinate (evidenceinputtop) at
+    ($(assess.west)!-1!(bundleinput.south)$);
+  \node[inputobj,anchor=north] (evidenceinput) at
+    (inputaxis |- evidenceinputtop) {
+    {\bfseries Evidence Entity $a_r$}
+    (Fig.~\ref{fig:attempt-assessment})\\[\boxtitlegap]
+    attributable to $r$ and assessed under $\mathcal A$; lineage to $x_r$
+    when applicable};
+
+  \coordinate (yesbend) at (configdone.south |- infer.west);
+  \coordinate (nobend) at
+    ($(configdone.north)+(configdone.south)-(yesbend)$);
+  \coordinate (loopreturn) at (attemptregion.west |- nobend);
+
+  \coordinate (boundflow) at ($(bind.south)!0.50!(closed.north)$);
+  \coordinate (registeratp3) at (register.south |- phase23divider);
+  \coordinate (attemptflow) at
+    ($(register.south)!0.50!(registeratp3)$);
+  \coordinate (realflow) at ($(derive.south)!0.50!(assess.north)$);
+  \coordinate (classflow) at ($(merge)!0.50!(recordclass.north)$);
+  \coordinate (assessmentflow) at
+    ($(recordclass.south)!0.50!(loopbottom)$);
+  \coordinate (illoutlevel) at (closed);
+  \coordinate (attemptreportlevel) at (hasinfer);
+  \coordinate (generaloutlevel) at (infer);
+  \node[compactoutputobj] (boundout) at
+    (resourceaxis |- bind) {
+    \makebox[\linewidth]{Binding record\hfill\smash{$\kappa$}}};
+  \node[resultobj] (illout) at (resourceaxis |- illoutlevel) {
+    {\bfseries Input-level result}\\[\boxtitlegap]
+    ill-specified; attempt assessment does not begin};
+  \node[compactoutputobj] (attemptout) at
+    (resourceaxis |- register) {
+    \makebox[\linewidth]{Attempt registry entry\hfill\smash{$\rho_r$}}};
+  \node[compactoutputobj] (realout) at (resourceaxis |- realflow) {
+    \makebox[\linewidth]{Attempt realisations\hfill\smash{$b_r,c_r$}}};
+  \node[compactoutputobj] (assessmentout) at
+    (resourceaxis |- recordclass) {
+    \makebox[\linewidth]{Per-attempt assessment\hfill\smash{$y_{r_i}$}}};
+  \coordinate (classoutbottom) at
+    ($(classflow)+(assessmentout.south)-(assessmentflow)$);
+  \node[compactoutputobj,anchor=south] (classout) at
+    (resourceaxis |- classoutbottom) {
+    \makebox[\linewidth]{Attempt classification\hfill\smash{$q_r,d_r$}}};
+  \node[resultobj] (attemptreport) at (resourceaxis |- attemptreportlevel) {
+    {\bfseries Attempt-level report}\\[\boxtitlegap]
+    $\reportop$ from Eq.~\eqref{eq:report-procedure};
+    $\mathcal J=\varnothing$ by choice};
+  \node[compactresultobj] (generalout) at (resourceaxis |- generaloutlevel) {
+    \makebox[\linewidth]{\bfseries General assessment and report\hfill\hspace{4pt}
+      \normalfont\smash{$\gamma$}}};
+
+  \foreach \outputnode in {illout,attemptreport,generalout} {
+    \draw[outputinner]
+      ([xshift=2.0pt,yshift=2.0pt]\outputnode.south west) rectangle
+      ([xshift=-2.0pt,yshift=-2.0pt]\outputnode.north east);
+  }

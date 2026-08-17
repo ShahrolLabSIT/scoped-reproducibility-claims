@@ -1,0 +1,57 @@
+% GitHub Actions job graph.
+\draw[control] (trigger) -- (imagejob);
+\coordinate (nativeflowbend) at (trigger.south |- nativejobs);
+\coordinate (uncontainerlabelright) at
+  (attemptjobgroupleft |- nativejobs);
+\coordinate (uncontainerlabelcenter) at
+  ($(nativeflowbend)!0.5!(uncontainerlabelright)$);
+\draw[control] (trigger.south) -- (nativeflowbend) -- (nativejobs.west);
+\node[routelabel,below] at (uncontainerlabelcenter)
+  {Uncontainerised};
+\draw[control] (imagejob) -- (containerjobs);
+\coordinate (digestflowturn) at
+  (inferjob.north |- dependencyflowlevel);
+\coordinate (digestlabelleft) at
+  (attemptjobgroupright |- dependencyflowlevel);
+\coordinate (digestlabelcenter) at
+  ($(digestlabelleft)!0.5!(digestflowturn)$);
+\draw[control] (imagejob.north) -- (imagejob.north |- dependencyflowlevel)
+  -- (digestflowturn) -- (inferjob.north);
+\node[routelabel,below] at (digestlabelcenter)
+  {Binds release to image digest};
+\coordinate (containermiddleinside) at
+  (containerstackmiddle.east);
+\coordinate (nativemiddleinside) at
+  (nativestackmiddle.east);
+\draw[controlplain] (containermiddleinside) -- (containerstackjoin);
+\draw[controlplain] (nativemiddleinside) -- (nativestackjoin);
+\coordinate (containermergebend) at (attemptjobmerge |- containerstackjoin);
+\coordinate (nativemergebend) at (attemptjobmerge |- nativestackjoin);
+\draw[controlplain] (containerstackjoin) -- (containermergebend)
+  -- (attemptjobmerge);
+\draw[controlplain] (nativestackjoin) -- (nativemergebend)
+  -- (attemptjobmerge);
+\draw[control] (attemptjobmerge) -- (inferjob.west);
+\draw[supply] (inferjob) -- (releasejob);
+
+% Four-stage protocol flow.
+\draw[control] (stage1.east |- stageflowlevel) --
+  (stage2.west |- stageflowlevel);
+\draw[control] (stage2.east |- stageflowlevel) --
+  (stage3.west |- stageflowlevel);
+\draw[control] (stage3.east |- stageflowlevel) --
+  (stage4.west |- stageflowlevel);
+
+% The attempt jobs implement Stages 1--3; infer implements Stage 4.
+% Treat this as a crossover: the horizontal mapping passes through, while
+% the vertical mapping leaves an equal gap above and below it.
+\coordinate (attemptmapup) at ([yshift=1.5pt]attemptmapjunction);
+\coordinate (attemptmapdown) at ([yshift=-1.5pt]attemptmapjunction);
+\draw[detail] (attemptmapup) -- (attemptmaporigin);
+\draw[detail] (attemptmapjunction) -- (stage1map);
+\draw[detail] (attemptmapjunction) -- (stage3map);
+\draw[detail] (stage1map) -- (stage1.north);
+\draw[detail] (attemptmapdown) -- (stage2.north);
+\draw[detail] (stage3map) -- (stage3.north);
+\draw[detail] (inferjob.south) -- (inferjob.south |- stage4map)
+  -- (stage4map) -- (stage4.north);

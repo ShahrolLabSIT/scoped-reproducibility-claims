@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the accompanying paper."
+title: "Executable companion to Scoped Reproducibility Claims"
+type: software
+authors:
+  - family-names: Sluitman
+    given-names: Casper Marc
+  - family-names: Mohammadan
+    given-names: Shahrol
+version: 0.1.0
+license: Apache-2.0
+repository-code: "https://github.com/ShahrolLabSIT/scoped-reproducibility-claims"

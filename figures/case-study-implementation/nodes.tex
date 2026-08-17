@@ -1,0 +1,231 @@
+\newcommand{\stagekey}[1]{{\fontsize{4.8}{5.1}\selectfont\rmfamily\bfseries
+  \color{black!60}#1}}
+\newcommand{\tabletitle}[1]{%
+  \multicolumn{2}{@{}l@{}}{{\scriptsize\bfseries #1}}\tabularnewline
+  \noalign{\vskip4pt}}
+\newcommand{\tablecolumns}{%
+  \stagekey{Object}&\stagekey{Case-study realisation}\tabularnewline}
+\newcommand{\tablesection}[1]{%
+  \multicolumn{2}{@{}l@{}}{\stagekey{\rule{0pt}{7pt}#1}}\tabularnewline}
+\newcommand{\tablerow}[2]{%
+  \raggedright\ensuremath{#1}&\raggedright #2\tabularnewline}
+\newcommand{\tablerule}{%
+  \noalign{\vskip1.4pt}\hline\noalign{\vskip1.4pt}}
+\newenvironment{stagetable}
+  {\begin{minipage}[t]{\linewidth}%
+   \setlength{\tabcolsep}{0pt}%
+   \setlength{\arrayrulewidth}{0.25pt}%
+   \renewcommand{\arraystretch}{1.18}%
+   \fontsize{5.2}{6.2}\selectfont
+   \begin{tabular}{@{}p{1.05cm}@{\hspace{6pt}}%
+     p{\dimexpr\linewidth-1.05cm-6pt\relax}@{}}}
+  {\end{tabular}\end{minipage}}
+
+\pgfmathsetlengthmacro{\halfimplementationgap}{0.5*\implementationgap}
+\pgfmathsetlengthmacro{\quarterimplementationgap}{0.25*\implementationgap}
+\pgfmathsetlengthmacro{\threequarterimplementationgap}{0.75*\implementationgap}
+
+% Four equal tables expose the same schema: protocol object at left and its
+% concrete case-study representation at right.
+\node[stagecard,anchor=north west,text width=3.80cm]
+  (stage1) at (0,0) {\begin{stagetable}
+  \tabletitle{Stage 1: Binding}
+  \tablecolumns
+  \tablerule
+  \tablesection{Input}
+  \tablerow{\mathrm{SRC}_c}{Containerised reproducibility claim.}
+  \tablerow{\mathrm{SRC}_n}{Uncontainerised reproducibility claim.}
+  \tablerow{\mathcal I_c,\mathcal I_n}{General claims over three contexts each.}
+  \tablerow{\mathrm{inputs}}{Five external sources, identified and constrained
+    by size, format, and digest.}
+  \tablerule
+  \tablesection{Operation}
+  \tablerow{\bindop}{Resolve both claims and their inference requirements
+    before attempts begin.}
+  \tablerule
+  \tablesection{Output}
+  \tablerow{\kappa}{Complete: shared by all attempts; incomplete: returned as
+    an input-level result and assessment stops.}
+  \end{stagetable}};
+
+\node[stagecard,anchor=north west,text width=3.80cm]
+  (stage2) at ([xshift=0.28cm]stage1.north east) {\begin{stagetable}
+  \tabletitle{Stage 2: Registration}
+  \tablecolumns
+  \tablerule
+  \tablesection{Input}
+  \tablerow{r}{Six attempts: two modes $\times$ three runners.}
+  \tablerow{R_c}{One digest-qualified image on Ubuntu 22/x64,
+    Ubuntu 24/x64, and Ubuntu 24/ARM64 via QEMU.}
+  \tablerow{R_n}{Environment rebuilt on Ubuntu 24/x64,
+    Windows 2025/x64, and macOS 15/ARM64.}
+  \tablerow{\mathrm{selection}_r}{All environments are selected in advance.}
+  \tablerule
+  \tablesection{Operation}
+  \tablerow{\registerop}{Preregister each runner attempt before execution.}
+  \tablerule
+  \tablesection{Output}
+  \tablerow{\rho_r}{Mode, realised runner context, source, selection basis,
+    and conformance to $R$.}
+  \end{stagetable}};
+
+\node[stagecard,anchor=north west,text width=3.80cm]
+  (stage3) at ([xshift=0.28cm]stage2.north east) {\begin{stagetable}
+  \tabletitle{Stage 3: Execute and assess}
+  \tablecolumns
+  \tablerule
+  \tablesection{Input}
+  \tablerow{B_c}{Fixed image, analysis, figure, and \LaTeX.}
+  \tablerow{B_n}{Reconstructed Python environment, analysis, and figure;
+    image and \LaTeX{} excluded.}
+  \tablerow{\mathcal P}{Runner, environment, inputs, execution, and output
+    lineage must be recorded.}
+  \tablerow{\mathcal A}{Analysis and figure data exact; rendered figure
+    checked for format and dimensions.}
+  \tablerow{\delta}{Same-index MNIST--QMNIST prediction agreement
+    $\geq 99\%$.}
+  \tablerule
+  \tablesection{Operation}
+  \tablerow{\verifyop}{Execute $W$; realise scope and context; check
+    conformance and evidence; decide.}
+  \tablerule
+  \tablesection{Output}
+  \tablerow{x_r}{Predictions, metrics, figure, and container-only PDF.}
+  \tablerow{P_r,a_r}{Recorded provenance and attributable evidence.}
+  \tablerow{y_r}{Attempt classification, reproduction decision, and
+    justification.}
+  \end{stagetable}};
+
+\node[stagecard,anchor=north west,text width=3.80cm]
+  (stage4) at ([xshift=0.28cm]stage3.north east) {\begin{stagetable}
+  \tabletitle{Stage 4: Infer and release}
+  \tablecolumns
+  \tablerule
+  \tablesection{Input}
+  \tablerow{\mathcal L}{All six registered attempt assessments.}
+  \tablerow{M}{Retain missing, inadmissible, and unassessable attempts.}
+  \tablerow{g}{Support requires every attempt to reproduce and all exact
+    outputs to agree.}
+  \tablerule
+  \tablesection{Operation}
+  \tablerow{}{Apply
+    ${\collectop}\rightarrow{\inferop}\rightarrow{\reportop}$ separately to
+    $\mathcal I_c$ and $\mathcal I_n$.}
+  \tablerule
+  \tablesection{Output}
+  \tablerow{\gamma_c,\gamma_n}{Separate containerised and uncontainerised
+    general assessments.}
+  \tablerow{\mathrm{report}}{Both claims linked to all attempts, provenance,
+    evidence, and justifications.}
+  \tablerow{\mathrm{release}}{Publish only when
+    $\gamma_c=\gamma_n=\mathrm{supported}$.}
+  \end{stagetable}};
+
+\coordinate (pipelineleft) at (stage1.west);
+\coordinate (pipelineright) at (stage4.east);
+\coordinate (stageflowlevel) at (stage1.center);
+
+% Compact GitHub Actions strip above the stage pipeline.
+\coordinate (upperjobline) at ([yshift=3.08cm]stage1.north);
+\coordinate (middlejobline) at ([yshift=2.44cm]stage1.north);
+% The visible output comes from each stack's middle card, 3pt below its
+% front card. Lift the native stack by 6pt so those two output lines are
+% equidistant from the infer line.
+\coordinate (lowerjobline) at ([yshift=2.0108cm]stage1.north);
+
+\node[job,fill=black!10,anchor=west,text width=1.35cm] (trigger)
+  at ([xshift=\quarterimplementationgap]pipelineleft |- upperjobline)
+  {\texttt{push}: \texttt{main}};
+\coordinate (containerjobcenter) at (stage2.center |- upperjobline);
+\node[jobstack,text width=2.85cm] (containerstackback)
+  at ([xshift=6pt,yshift=-6pt]containerjobcenter) {};
+\node[jobstack,text width=2.85cm] (containerstackmiddle)
+  at ([xshift=3pt,yshift=-3pt]containerjobcenter) {};
+\node[job,text width=2.85cm]
+  (containerjobs) at (containerjobcenter)
+  {{\fontsize{6.0}{6.4}\selectfont\texttt{attempt (container)}}};
+\coordinate (imagejobcenter) at
+  ($(trigger.east)!0.5!(containerjobs.west)$);
+\node[job,text width=1.65cm] (imagejob) at (imagejobcenter)
+  {\texttt{build-image}};
+\coordinate (nativejobcenter) at (stage2.center |- lowerjobline);
+\node[jobstack,text width=2.85cm] (nativestackback)
+  at ([xshift=6pt,yshift=-6pt]nativejobcenter) {};
+\node[jobstack,text width=2.85cm] (nativestackmiddle)
+  at ([xshift=3pt,yshift=-3pt]nativejobcenter) {};
+\node[job,text width=2.85cm] (nativejobs)
+  at (nativejobcenter)
+  {{\fontsize{6.0}{6.4}\selectfont\texttt{attempt (native)}}};
+\node[job,fill=black!10,anchor=east,text width=1.65cm] (releasejob)
+  at ([xshift=-\quarterimplementationgap]pipelineright |- middlejobline)
+  {GitHub Release};
+\node[routelabel,anchor=south]
+  at ([yshift=3pt]releasejob.north)
+  {Claims pass:};
+\node[routelabel,anchor=north]
+  at ([yshift=-3pt]releasejob.south)
+  {otherwise: fail pipeline};
+\coordinate (inferjobx) at
+  ($(stage3.east)!0.5!(stage4.west)$);
+\node[job,text width=1.95cm] (inferjob)
+  at (inferjobx |- middlejobline)
+  {\texttt{infer}};
+
+\coordinate (attemptjobgroupleft) at
+  ([xshift=-\quarterimplementationgap]containerjobs.west);
+\coordinate (attemptjobgroupright) at
+  ([xshift=0.30cm]containerstackback.east);
+\coordinate (attemptjobgrouptop) at
+  ([yshift=\quarterimplementationgap]containerjobs.north);
+\coordinate (attemptjobgroupbottomedge) at
+  ([yshift=-\quarterimplementationgap]nativestackback.south);
+\coordinate (attemptjobgroupbottom) at
+  (stage2.center |- attemptjobgroupbottomedge);
+\coordinate (containerstackjoinbase) at
+  (attemptjobgroupright |- containerstackmiddle.east);
+\coordinate (containerstackjoin) at
+  ([xshift=0.30cm]containerstackjoinbase);
+\coordinate (nativestackjoinbase) at
+  (attemptjobgroupright |- nativestackmiddle.east);
+\coordinate (nativestackjoin) at
+  ([xshift=0.30cm]nativestackjoinbase);
+
+\coordinate (dependencyflowlevel) at
+  ([yshift=\halfimplementationgap]containerjobs.north);
+\coordinate (attemptjobmerge) at
+  ($(inferjob.west)-(releasejob.west)+(inferjob.east)$);
+\coordinate (orchestrationbottom) at
+  ([yshift=-\halfimplementationgap]attemptjobgroupbottom);
+\coordinate (orchestrationtop) at
+  ([yshift=\halfimplementationgap]attemptjobgrouptop);
+
+\begin{scope}[on background layer]
+  \path[orchestration]
+    (pipelineleft |- orchestrationbottom) rectangle
+    (pipelineright |- orchestrationtop);
+  \path[jobgroup]
+    (attemptjobgroupleft |- attemptjobgrouptop) rectangle
+    (attemptjobgroupright |- attemptjobgroupbottom);
+  % Deliberate break in the dotted outline where the stage mapping exits.
+  \draw[draw=black!4,line width=1.2pt,line cap=butt]
+    ([xshift=-1.2pt]attemptjobgroupbottom) --
+    ([xshift=1.2pt]attemptjobgroupbottom);
+\end{scope}
+\node[regionlabel,anchor=north west]
+  at ([xshift=4pt,yshift=-4pt]pipelineleft |- orchestrationtop)
+  {GitHub Actions};
+
+% Job-to-stage map, centered in the whitespace between orchestration and cards.
+\coordinate (stagemaplevel) at
+  ($(orchestrationbottom)!0.5!(stage1.north)$);
+\coordinate (attemptmaporigin) at (attemptjobgroupbottom);
+\coordinate (attemptmapjunction) at
+  (attemptmaporigin |- stagemaplevel);
+\coordinate (stage1map) at (stage1.north |- stagemaplevel);
+\coordinate (stage2map) at (stage2.north |- stagemaplevel);
+\coordinate (stage3map) at (stage3.north |- stagemaplevel);
+\coordinate (stage4map) at (stage4.north |- stagemaplevel);
+
+\draw[outputinner]
+  ([xshift=2pt,yshift=2pt]releasejob.south west) rectangle
+  ([xshift=-2pt,yshift=-2pt]releasejob.north east);

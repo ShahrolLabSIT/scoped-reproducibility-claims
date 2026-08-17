@@ -1,0 +1,81 @@
+\newsavebox{\protocolbaselinebox}
+\newsavebox{\protocolprobebox}
+\newsavebox{\protocolcaptionbox}
+\newlength{\protocolbaseflowgap}
+\newlength{\protocolbaselineheight}
+\newlength{\protocolprobeheight}
+\newlength{\protocolslopeheight}
+\newlength{\protocolremainingheight}
+\newlength{\protocolcaptionheight}
+\newlength{\protocoltargetheight}
+\newlength{\protocolcomputedflowgap}
+\newlength{\protocolfigureedgegap}
+\newlength{\protocolfigurebottomcorrection}
+\makeatletter
+\newcommand{\VerificationProtocolFigure}[1]{%
+\begingroup
+\def\protocolstrokewidth{#1}%
+\setlength{\protocolbaseflowgap}{0.44cm}
+\newcommand{\protocolflowgap}{0.44cm}
+\newcommand{\protocolfigurecaption}{Diagram of verification protocol for assessing reproduction attempts against SRC. Inputs flow from the left into protocol steps, with artefacts produced by these steps shown on the right (both internal resources and protocol outputs). \hyperref[stage:protocol-bind]{stage 1} binds and checks the specifications, \hyperref[stage:protocol-register]{stage 2} registers each attempt across execution contexts, \hyperref[stage:protocol-verify]{stage 3} produces a per-attempt assessment, and \hyperref[stage:protocol-report]{stage 4} collects these assessments for inference based on a bound \(\mathcal I\) to support a general claim of reproducibility.}
+\newcommand{\measureprotocolcaption}{%
+  \setbox\protocolcaptionbox=\vbox{%
+    \hsize=\textwidth
+    \parindent=0pt
+    \def\@captype{figure}%
+    \advance\c@figure\@ne
+    \@makecaption{\fnum@figure}{\protocolfigurecaption}}}
+\newcommand{\protocolcaptionoutside}{%
+  \def\@captype{figure}%
+  \caption{\protocolfigurecaption}}
+
+\setlength{\protocolfigureedgegap}{\baselineskip}
+\setlength{\protocolfigurebottomcorrection}{3pt}
+
+\begin{figure*}[!p]
+\centering
+
+\measureprotocolcaption
+\sbox{\protocolbaselinebox}{%
+  \renewcommand{\protocolflowgap}{\the\protocolbaseflowgap}%
+  \input{figures/verification-protocol/diagram}}
+\sbox{\protocolprobebox}{%
+  \renewcommand{\protocolflowgap}{%
+    \the\dimexpr\protocolbaseflowgap+1pt\relax}%
+  \input{figures/verification-protocol/diagram}}
+\setlength{\protocolbaselineheight}{%
+  \dimexpr\ht\protocolbaselinebox+\dp\protocolbaselinebox\relax}
+\setlength{\protocolprobeheight}{%
+  \dimexpr\ht\protocolprobebox+\dp\protocolprobebox\relax}
+\setlength{\protocolslopeheight}{%
+  \dimexpr\protocolprobeheight-\protocolbaselineheight\relax}
+\setlength{\protocolremainingheight}{\textheight}
+\setlength{\protocolcaptionheight}{%
+  \dimexpr\ht\protocolcaptionbox+\dp\protocolcaptionbox\relax}
+\setlength{\protocoltargetheight}{%
+  \dimexpr\protocolremainingheight-\protocolcaptionheight-
+    \protocolfigureedgegap+\abovecaptionskip+
+    \protocolfigurebottomcorrection-\baselineskip-3pt\relax}
+\pgfmathsetlength{\protocolcomputedflowgap}{%
+  \protocolbaseflowgap+
+  ((\protocoltargetheight-\protocolbaselineheight)/
+    (\protocolslopeheight/1pt))*1pt}
+\ifdim\protocolcomputedflowgap<0.32cm
+  \setlength{\protocolcomputedflowgap}{0.32cm}
+\fi
+\ifdim\protocolcomputedflowgap>0.78cm
+  \setlength{\protocolcomputedflowgap}{0.78cm}
+\fi
+
+\begingroup
+  \renewcommand{\protocolflowgap}{\the\protocolcomputedflowgap}%
+  \noindent\makebox[\textwidth][c]{%
+    \input{figures/verification-protocol/diagram}}\par
+  \vspace{\dimexpr\protocolfigureedgegap-\abovecaptionskip-
+    \protocolfigurebottomcorrection\relax}
+  \protocolcaptionoutside
+  \label{fig:verification-protocol}
+\endgroup
+\end{figure*}
+\endgroup}
+\makeatother

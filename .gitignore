@@ -1,0 +1,29 @@
+# Generated research inputs, evidence, and TeX intermediates. The compiled
+# manuscript is the only build product retained by Git.
+/build/*
+!/build/main.pdf
+/main.pdf
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*-SAVE-ERROR
+
+# Local Python and tool state.
+/.venv/
+/.pytest_cache/
+/.ruff_cache/
+**/__pycache__/
+*.py[cod]
+
+# Editors and operating systems.
+/.vscode/
+/draft.md
+.DS_Store
+/tmp

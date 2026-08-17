@@ -1,0 +1,63 @@
+% #1: stroke width supplied by the manuscript.
+\newcommand{\ClaimClassificationDiagram}[1]{%
+\begingroup
+\begin{tikzpicture}[
+  x=0.575cm,
+  y=0.575cm,
+  font=\scriptsize,
+  line width=#1,
+  limit/.style={draw=black!70,densely dotted},
+  tick/.style={draw=black},
+  annotation/.style={align=center,inner sep=1pt},
+  cell/.style={annotation,font=\fontsize{6}{6.7}\selectfont}
+]
+  \def\AttemptHorizontalPadding{0.4}
+  \def\AttemptVerticalPadding{0.2}
+  \def\AttemptLabelHorizontalPadding{0.1}
+  \def\AttemptLabelVerticalDrop{0.3}
+  \path[use as bounding box] (-0.85,-0.9) rectangle (11.85,5.9);
+
+  \path[fill=black!4] (1,0) rectangle (6,5);
+  \path[fill=black!9] (0,1) rectangle (11,3);
+  \path[fill=black!22] (1,1) rectangle (6,3);
+
+  \draw[limit] (1,0) -- (1,5);
+  \draw[limit] (6,0) -- (6,5);
+  \draw[limit] (0,1) -- (11,1);
+  \draw[limit] (0,3) -- (11,3);
+  \draw[draw=black!85] (0,0) rectangle (11,5);
+
+  \foreach \x in {1,...,10} {
+    \draw[tick] (\x,0) -- (\x,0.1);
+  }
+  \foreach \y in {1,...,4} {
+    \draw[tick] (0,\y) -- (0.1,\y);
+  }
+
+  \node[annotation,anchor=south] at (3.5,5.33) {$C$};
+  \node[annotation,anchor=west] at (11.33,2) {$B$};
+  \node[annotation,anchor=north] at (5.5,-0.33)
+    {Context realisation $c_r$};
+  \node[annotation,rotate=90,anchor=south] at (-0.33,2.5)
+    {Scope realisation $b_r$};
+
+  \node[cell,font=\fontsize{6}{6.7}\selectfont\slshape] at (3.5,2)
+    {Executed workflow\\as specified within\\claim conditions};
+  \node[cell] at (8.5,2)
+    {Executed workflow\\as specified outside\\claim conditions};
+
+  \node[cell] at (3.5,4)
+    {Within claim conditions,\\but did not execute\\workflow as specified};
+  \node[cell] at (8.5,4)
+    {Execution recorded in $P_r$,\\but neither as specified nor\\within claim conditions};
+
+  \node[inner sep=0pt]
+    at ({1+\AttemptHorizontalPadding},
+        {1+\AttemptVerticalPadding}) {$\circ$};
+  \node[annotation,anchor=north west]
+    at ({1+\AttemptHorizontalPadding+\AttemptLabelHorizontalPadding},
+        {1+\AttemptVerticalPadding-\AttemptLabelVerticalDrop})
+    {$r\;(c_r,b_r)$};
+
+\end{tikzpicture}
+\endgroup}

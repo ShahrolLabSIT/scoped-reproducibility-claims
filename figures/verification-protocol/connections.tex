@@ -1,0 +1,57 @@
+  \draw[control] (start) -- (bind);
+  \draw[control] (bind) -- (closed);
+  \coordinate (verifyentry) at (closed.south |- attemptregion.north);
+  \draw[control] (closed) -- (verifyentry) -- (register);
+  \coordinate (closedatp2) at (closed.south |- phase12divider);
+  \coordinate (closedyescenter) at
+    ($(closed.south)!0.50!(closedatp2)$);
+  \node[branchlabel,right] at (closedyescenter) {yes};
+  \draw[control] (register) -- (derive);
+  \draw[control] (derive) -- (assess);
+  \draw[control] (assess) -- (admissible);
+  \coordinate (branchsplit) at ([yshift=-\branchstem]admissible.south);
+  \coordinate (leftsplitbend) at (applydelta.north |- branchsplit);
+  \coordinate (rightsplitbend) at (setbottom.north |- branchsplit);
+  \draw[controlplain] (admissible.south) -- (branchsplit);
+  \draw[control] (branchsplit) --
+    node[branchlabel,above,pos=0.50]{admissible}
+    (leftsplitbend) -- (applydelta.north);
+  \draw[control] (branchsplit) --
+    node[branchlabel,above,pos=0.50]{otherwise}
+    (rightsplitbend) -- (setbottom.north);
+  \coordinate (leftmergebend) at (applydelta.south |- merge);
+  \coordinate (rightmergebend) at (setbottom.south |- merge);
+  \draw[controlplain] (applydelta.south) -- (leftmergebend) -- (merge);
+  \draw[controlplain] (setbottom.south) -- (rightmergebend) -- (merge);
+  \draw[control] (merge) -- (recordclass.north);
+  \draw[control] (recordclass) -- (hasinfer);
+  \draw[control] (hasinfer.west) --
+    node[branchlabel,above,pos=0.50]{yes} (configdone.east);
+  \draw[control] (configdone.south) --
+    node[branchlabel,left,pos=0.50]{yes} (yesbend) -- (infer.west);
+  \draw[control] (configdone.north) --
+    node[branchlabel,left,pos=0.50]{no} (nobend) --
+    node[dependencylabel,above,pos=0.50]{next configuration} (loopreturn);
+
+  \draw[supply] (specinput.east) -- (bind.west);
+  \draw[supply] (basisinput.east) -- (register.west);
+  \draw[supply] (bundleinput.east) -- (derive.west);
+  \draw[supply] (evidenceinput.north) |- (assess.west);
+
+  \coordinate (boundoutbend) at (boundout.south |- boundflow);
+  \draw[detail] (boundflow) -- (boundoutbend) -- (boundout.south);
+  \draw[produce] (closed.east) --
+    node[branchlabel,above,pos=0.50]{no} (illout.west);
+  \coordinate (attemptoutbend) at (attemptout.south |- attemptflow);
+  \draw[detail] (attemptflow) -- (attemptoutbend) -- (attemptout.south);
+  \draw[detail] (realflow) -- (realout.west);
+  \coordinate (classoutbend) at (classout.south |- classflow);
+  \draw[detail] (classflow) --
+    (classoutbend) -- (classout.south);
+  \coordinate (assessmentoutbend) at
+    (assessmentout.south |- assessmentflow);
+  \draw[detail] (assessmentflow) --
+    (assessmentoutbend) -- (assessmentout.south);
+  \draw[produce] (hasinfer.east) --
+    node[branchlabel,above,pos=0.50]{no} (attemptreport.west);
+  \draw[produce] (infer.east) -- (generalout.west);

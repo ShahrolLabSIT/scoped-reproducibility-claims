@@ -1,0 +1,297 @@
+@article{lamb2022reproducible,
+  title     = {Reproducible Builds: Increasing the Integrity of Software Supply Chains},
+  volume    = {39},
+  url       = {http://dx.doi.org/10.1109/MS.2021.3073045},
+  doi       = {10.1109/ms.2021.3073045},
+  number    = {2},
+  journal   = {IEEE Software},
+  publisher = {Institute of Electrical and Electronics Engineers (IEEE)},
+  author    = {Lamb, Chris and Zacchiroli, Stefano},
+  year      = {2022},
+  month     = mar,
+  pages     = {62--70}
+}
+
+ @article{boettiger2015docker,
+  title        = {An introduction to Docker for reproducible research},
+  volume       = {49},
+  url          = {http://dx.doi.org/10.1145/2723872.2723882},
+  doi          = {10.1145/2723872.2723882},
+  abstractnote = {<jats:p>As computational work becomes more and more integral to many aspects of scientific research, computational reproducibility has become an issue of increasing importance to computer systems researchers and domain scientists alike. Though computational reproducibility seems more straight forward than replicating physical experiments, the complex and rapidly changing nature of computer environments makes being able to reproduce and extend such work a serious challenge. In this paper, I explore common reasons that code developed for one research project cannot be successfully executed or extended by subsequent researchers. I review current approaches to these issues, including virtual machines and workflow systems, and their limitations. I then examine how the popular emerging technology Docker combines several areas from systems research - such as operating system virtualization, cross-platform portability, modular re-usable elements, versioning, and a “DevOps” philosophy, to address these challenges. I illustrate this with several examples of Docker use with a focus on the R statistical environment.</jats:p>},
+  number       = {1},
+  journal      = {ACM SIGOPS Operating Systems Review},
+  publisher    = {Association for Computing Machinery (ACM)},
+  author       = {Boettiger, Carl},
+  year         = {2015},
+  month        = jan,
+  pages        = {71--79},
+  language     = {en}
+}
+ @misc{nasem2019reproducibility,
+  title     = {Reproducibility and Replicability in Science},
+  url       = {http://dx.doi.org/10.17226/25303},
+  doi       = {10.17226/25303},
+  publisher = {National Academies Press},
+  year      = {2019},
+  month     = sep
+}
+@article{kim2018experimenting,
+  author   = {Kim, Yang-Min and Poline, Jean-Baptiste and Dumas, Guillaume},
+  title    = {Experimenting with reproducibility: a case study of robustness in bioinformatics},
+  journal  = {GigaScience},
+  volume   = {7},
+  number   = {7},
+  pages    = {giy077},
+  year     = {2018},
+  month    = {07},
+  abstract = {Reproducibility has been shown to be limited in many scientific fields. This question is a fundamental tenet of scientific activity, but the related issues of reusability of scientific data are poorly documented. Here, we present a case study of our difficulties in reproducing a published bioinformatics method even though code and data were available. First, we tried to re-run the analysis with the code and data provided by the authors. Second, we reimplemented the whole method in a Python package to avoid dependency on a MATLAB license and ease the execution of the code on a high-performance computing cluster. Third, we assessed reusability of our reimplementation and the quality of our documentation, testing how easy it would be to start from our implementation to reproduce the results. In a second section, we propose solutions from this case study and other observations to improve reproducibility and research efficiency at the individual and collective levels.While finalizing our code, we created case-specific documentation and tutorials for the associated Python package StratiPy. Readers are invited to experiment with our reproducibility case study by generating the two confusion matrices (see more in section “Robustness: from MATLAB to Python, language and organization"). Here, we propose two options: a step-by-step process to follow in a Jupyter/IPython notebook or a Docker container ready to be built and run.},
+  issn     = {2047-217X},
+  doi      = {10.1093/gigascience/giy077},
+  url      = {https://doi.org/10.1093/gigascience/giy077},
+  eprint   = {https://academic.oup.com/gigascience/article-pdf/7/7/giy077/25178539/giy077.pdf}
+}
+
+
+
+@article{samuel2024notebooks,
+  author   = {Samuel, Sheeba and Mietchen, Daniel},
+  title    = {Computational reproducibility of Jupyter notebooks from biomedical publications},
+  journal  = {GigaScience},
+  volume   = {13},
+  pages    = {giad113},
+  year     = {2024},
+  month    = {01},
+  abstract = {Jupyter notebooks facilitate the bundling of executable code with its documentation and output in one interactive environment, and they represent a popular mechanism to document and share computational workflows, including for research publications. The reproducibility of computational aspects of research is a key component of scientific reproducibility but has not yet been assessed at scale for Jupyter notebooks associated with biomedical publications.We address computational reproducibility at 2 levels: (i) using fully automated workflows, we analyzed the computational reproducibility of Jupyter notebooks associated with publications indexed in the biomedical literature repository PubMed Central. We identified such notebooks by mining the article’s full text, trying to locate them on GitHub, and attempting to rerun them in an environment as close to the original as possible. We documented reproduction success and exceptions and explored relationships between notebook reproducibility and variables related to the notebooks or publications. (ii) This study represents a reproducibility attempt in and of itself, using essentially the same methodology twice on PubMed Central over the course of 2 years, during which the corpus of Jupyter notebooks from articles indexed in PubMed Central has grown in a highly dynamic fashion.Out of 27,271 Jupyter notebooks from 2,660 GitHub repositories associated with 3,467 publications, 22,578 notebooks were written in Python, including 15,817 that had their dependencies declared in standard requirement files and that we attempted to rerun automatically. For 10,388 of these, all declared dependencies could be installed successfully, and we reran them to assess reproducibility. Of these, 1,203 notebooks ran through without any errors, including 879 that produced results identical to those reported in the original notebook and 324 for which our results differed from the originally reported ones. Running the other notebooks resulted in exceptions.We zoom in on common problems and practices, highlight trends, and discuss potential improvements to Jupyter-related workflows associated with biomedical publications.},
+  issn     = {2047-217X},
+  doi      = {10.1093/gigascience/giad113},
+  url      = {https://doi.org/10.1093/gigascience/giad113},
+  eprint   = {https://academic.oup.com/gigascience/article-pdf/doi/10.1093/gigascience/giad113/60708559/giad113.pdf}
+}
+ @article{errington2021challenges,
+  title     = {Challenges for assessing replicability in preclinical cancer biology},
+  volume    = {10},
+  url       = {http://dx.doi.org/10.7554/eLife.67995},
+  doi       = {10.7554/elife.67995},
+  journal   = {eLife},
+  publisher = {eLife Sciences Publications, Ltd},
+  author    = {Errington, Timothy M and Denis, Alexandria and Perfito, Nicole and Iorns, Elizabeth and Nosek, Brian A},
+  year      = {2021},
+  month     = dec,
+  language  = {en}
+}
+
+@inproceedings{yadav2019qmnist,
+  author    = {Yadav, Chhavi and Bottou, Leon},
+  booktitle = {Advances in Neural Information Processing Systems},
+  editor    = {H. Wallach and H. Larochelle and A. Beygelzimer and F. d\textquotesingle Alch\'{e}-Buc and E. Fox and R. Garnett},
+  pages     = {},
+  publisher = {Curran Associates, Inc.},
+  title     = {Cold Case: The Lost MNIST Digits},
+  url       = {https://proceedings.neurips.cc/paper_files/paper/2019/file/51c68dc084cb0b8467eafad1330bce66-Paper.pdf},
+  volume    = {32},
+  year      = {2019}
+}
+
+@article{gentleman2007,
+  author    = {Robert Gentleman and Duncan Temple Lang},
+  title     = {Statistical Analyses and Reproducible Research},
+  journal   = {Journal of Computational and Graphical Statistics},
+  volume    = {16},
+  number    = {1},
+  pages     = {1--23},
+  year      = {2007},
+  publisher = {Taylor \& Francis},
+  doi       = {10.1198/106186007X178663},
+  url       = {https://doi.org/10.1198/106186007X178663},
+  eprint    = {https://doi.org/10.1198/106186007X178663}
+}
+
+@article{nuest2017,
+  author  = {N{\"u}st, Daniel and Konkol, Markus and Schutzeichel, Marc and Pebesma, Edzer and Kray, Christian and Przibytzin, Holger and Lorenz, J{\"o}rg},
+  title   = {Opening the Publication Process with Executable Research Compendia},
+  journal = {D-Lib Magazine},
+  year    = {2017},
+  volume  = {23},
+  number  = {1/2},
+  month   = jan,
+  doi     = {10.1045/january2017-nuest},
+  url     = {https://doi.org/10.1045/january2017-nuest}
+}
+
+@article{gruning2018,
+  author    = {Gr{\"u}ning, Bj{\"o}rn
+               and Chilton, John
+               and K{\"o}ster, Johannes
+               and Dale, Ryan
+               and Soranzo, Nicola
+               and van den Beek, Marius
+               and Goecks, Jeremy
+               and Backofen, Rolf
+               and Nekrutenko, Anton
+               and Taylor, James},
+  title     = {Practical Computational Reproducibility in the Life Sciences},
+  journal   = {Cell Systems},
+  year      = {2018},
+  month     = {Jun},
+  day       = {27},
+  publisher = {Elsevier},
+  volume    = {6},
+  number    = {6},
+  pages     = {631-635},
+  abstract  = {Many areas of research suffer from poor reproducibility, particularly in computationally intensive domains where results rely on a series of complex methodological decisions that are not well captured by traditional publication approaches. Various guidelines have emerged for achieving reproducibility, but implementation of these practices remains difficult due to the challenge of assembling software tools plus associated libraries, connecting tools together into pipelines, and specifying parameters. Here, we discuss a suite of cutting-edge technologies that make computational reproducibility not just possible, but practical in both time and effort. This suite combines three well-tested components?a system for building highly portable packages of bioinformatics software, containerization and virtualization technologies for isolating reusable execution environments for these packages, and workflow systems that automatically orchestrate the composition of these packages for entire pipelines?to achieve an unprecedented level of computational reproducibility. We also provide a practical implementation and five recommendations to help set a typical researcher on the path to performing data analyses reproducibly.},
+  issn      = {2405-4712},
+  doi       = {10.1016/j.cels.2018.03.014},
+  url       = {https://doi.org/10.1016/j.cels.2018.03.014}
+}
+
+@report{w3cprovdm,
+  editor      = {Moreau, Luc and Missier, Paolo},
+  title       = {{PROV-DM}: The {PROV} Data Model},
+  institution = {World Wide Web Consortium},
+  type        = {W3C Recommendation},
+  date        = {2013-04-30},
+  url         = {https://www.w3.org/TR/2013/REC-prov-dm-20130430/}
+}
+
+@article{wilkinson2016,
+  author   = {Wilkinson, Mark D.
+              and Dumontier, Michel
+              and Aalbersberg, IJsbrand Jan
+              and Appleton, Gabrielle
+              and Axton, Myles
+              and Baak, Arie
+              and Blomberg, Niklas
+              and Boiten, Jan-Willem
+              and da Silva Santos, Luiz Bonino
+              and Bourne, Philip E.
+              and Bouwman, Jildau
+              and Brookes, Anthony J.
+              and Clark, Tim
+              and Crosas, Merc{\`e}
+              and Dillo, Ingrid
+              and Dumon, Olivier
+              and Edmunds, Scott
+              and Evelo, Chris T.
+              and Finkers, Richard
+              and Gonzalez-Beltran, Alejandra
+              and Gray, Alasdair J.G.
+              and Groth, Paul
+              and Goble, Carole
+              and Grethe, Jeffrey S.
+              and Heringa, Jaap
+              and 't Hoen, Peter A.C
+              and Hooft, Rob
+              and Kuhn, Tobias
+              and Kok, Ruben
+              and Kok, Joost
+              and Lusher, Scott J.
+              and Martone, Maryann E.
+              and Mons, Albert
+              and Packer, Abel L.
+              and Persson, Bengt
+              and Rocca-Serra, Philippe
+              and Roos, Marco
+              and van Schaik, Rene
+              and Sansone, Susanna-Assunta
+              and Schultes, Erik
+              and Sengstag, Thierry
+              and Slater, Ted
+              and Strawn, George
+              and Swertz, Morris A.
+              and Thompson, Mark
+              and van der Lei, Johan
+              and van Mulligen, Erik
+              and Velterop, Jan
+              and Waagmeester, Andra
+              and Wittenburg, Peter
+              and Wolstencroft, Katherine
+              and Zhao, Jun
+              and Mons, Barend},
+  title    = {The FAIR Guiding Principles for scientific data management and stewardship},
+  journal  = {Scientific Data},
+  year     = {2016},
+  month    = {Mar},
+  day      = {15},
+  volume   = {3},
+  number   = {1},
+  pages    = {160018},
+  abstract = {There is an urgent need to improve the infrastructure supporting the reuse of scholarly data. A diverse set of stakeholders---representing academia, industry, funding agencies, and scholarly publishers---have come together to design and jointly endorse a concise and measureable set of principles that we refer to as the FAIR Data Principles. The intent is that these may act as a guideline for those wishing to enhance the reusability of their data holdings. Distinct from peer initiatives that focus on the human scholar, the FAIR Principles put specific emphasis on enhancing the ability of machines to automatically find and use the data, in addition to supporting its reuse by individuals. This Comment is the first formal publication of the FAIR Principles, and includes the rationale behind them, and some exemplar implementations in the community.},
+  issn     = {2052-4463},
+  doi      = {10.1038/sdata.2016.18},
+  url      = {https://doi.org/10.1038/sdata.2016.18}
+}
+
+@article{soilandreyes2022,
+  author  = {Soiland-Reyes, Stian and Sefton, Peter and Crosas, Merce and Castro, Leyla and Coppens, Frederik and Fernández, José and Garijo, Daniel and Grüning, Björn and Rosa, Marco and Leo, Simone and Carragáin, Eoghan and Portier, Marc and Trisovic, Ana and Community, RO-Crate and Groth, Paul and Goble, Carole},
+  year    = {2022},
+  month   = {01},
+  pages   = {1-42},
+  title   = {Packaging research artefacts with RO-Crate},
+  volume  = {5},
+  journal = {Data Science},
+  doi     = {10.3233/DS-210053}
+}
+
+@article{leo2024,
+  doi       = {10.1371/journal.pone.0309210},
+  author    = {Leo, Simone AND Crusoe, Michael R. AND Rodríguez-Navas, Laura AND Sirvent, Raül AND Kanitz, Alexander AND De Geest, Paul AND Wittner, Rudolf AND Pireddu, Luca AND Garijo, Daniel AND Fernández, José M. AND Colonnelli, Iacopo AND Gallo, Matej AND Ohta, Tazro AND Suetake, Hirotaka AND Capella-Gutierrez, Salvador AND de Wit, Renske AND Kinoshita, Bruno P. AND Soiland-Reyes, Stian},
+  journal   = {PLOS ONE},
+  publisher = {Public Library of Science},
+  title     = {Recording provenance of workflow runs with RO-Crate},
+  year      = {2024},
+  month     = {09},
+  volume    = {19},
+  url       = {https://doi.org/10.1371/journal.pone.0309210},
+  pages     = {1-35},
+  abstract  = {Recording the provenance of scientific computation results is key to the support of traceability, reproducibility and quality assessment of data products. Several data models have been explored to address this need, providing representations of workflow plans and their executions as well as means of packaging the resulting information for archiving and sharing. However, existing approaches tend to lack interoperable adoption across workflow management systems. In this work we present Workflow Run RO-Crate, an extension of RO-Crate (Research Object Crate) and Schema.org to capture the provenance of the execution of computational workflows at different levels of granularity and bundle together all their associated objects (inputs, outputs, code, etc.). The model is supported by a diverse, open community that runs regular meetings, discussing development, maintenance and adoption aspects. Workflow Run RO-Crate is already implemented by several workflow management systems, allowing interoperable comparisons between workflow runs from heterogeneous systems. We describe the model, its alignment to standards such as W3C PROV, and its implementation in six workflow systems. Finally, we illustrate the application of Workflow Run RO-Crate in two use cases of machine learning in the digital image analysis domain.},
+  number    = {9}
+}
+
+@article{sandve2013,
+  doi       = {10.1371/journal.pcbi.1003285},
+  author    = {Sandve, Geir Kjetil AND Nekrutenko, Anton AND Taylor, James AND Hovig, Eivind},
+  journal   = {PLOS Computational Biology},
+  publisher = {Public Library of Science},
+  title     = {Ten Simple Rules for Reproducible Computational Research},
+  year      = {2013},
+  month     = {10},
+  volume    = {9},
+  url       = {https://doi.org/10.1371/journal.pcbi.1003285},
+  pages     = {1-4},
+  abstract  = {null},
+  number    = {10}
+}
+
+@article{wilson2014,
+  doi       = {10.1371/journal.pbio.1001745},
+  author    = {Wilson, Greg AND Aruliah, D. A. AND Brown, C. Titus AND Chue Hong, Neil P. AND Davis, Matt AND Guy, Richard T. AND Haddock, Steven H. D. AND Huff, Kathryn D. AND Mitchell, Ian M. AND Plumbley, Mark D. AND Waugh, Ben AND White, Ethan P. AND Wilson, Paul},
+  journal   = {PLOS Biology},
+  publisher = {Public Library of Science},
+  title     = {Best Practices for Scientific Computing},
+  year      = {2014},
+  month     = {01},
+  volume    = {12},
+  pages     = {1-7},
+  abstract  = {We describe a set of best practices for scientific software development, based on research and experience, that will improve scientists' productivity and the reliability of their software.},
+  number    = {1}
+}
+
+@software{onnxmodelzoo2022mnist12,
+  author  = {{ONNX Model Zoo}},
+  title   = {{MNIST-12}: Handwritten Digit Recognition},
+  year    = {2022},
+  version = {ONNX opset 12},
+  url     = {https://github.com/onnx/models/tree/4c46cd00fbdb7cd30b6c1c17ab54f2e1f4f7b177/validated/vision/classification/mnist},
+  urldate = {2026-07-22},
+  note    = {Pretrained convolutional MNIST classifier}
+}
+
+@software{sluitman2026src,
+  author  = {Sluitman, Casper Marc and Mohammadan, Shahrol},
+  title   = {Executable {QMNIST} Case Study for Scoped Reproducibility Claims},
+  year    = {2026},
+  version = {0.1.0},
+  url     = {https://surl.jp/Q7uK6heC},
+  urldate = {2026-08-17},
+  note    = {Source code and supporting data}
+}

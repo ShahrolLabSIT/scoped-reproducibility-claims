@@ -1,0 +1,131 @@
+\newcommand{\QMNISTResultsFigure}[2]{%
+  \begingroup
+  \input{#2/case-study-values.tex}%
+  \def\qmnistresultrow##1##2##3##4##5##6##7##8##9{%
+    \ifnum##8=1\relax
+      \draw[result card]
+        (0,{##1-0.74}) rectangle (8.65,{##1+0.74});
+      \draw[result divider] (2.20,{##1-0.52}) -- (2.20,{##1+0.52});
+      \draw[result divider] (6.45,{##1-0.52}) -- (6.45,{##1+0.52});
+
+      \node[anchor=west,font=\scriptsize\bfseries]
+        at (0.22,{##1+0.17}) {Pair ##3};
+      \node[anchor=west,result muted]
+        at (0.22,{##1-0.17}) {True label $=##4$};
+
+      \node[result digit tile] (mnist##2) at (3.20,##1)
+        {\includegraphics[width=0.92cm,height=0.92cm]{#2/case-study-mnist-##2.png}};
+      \node[result difference tile] (difference##2) at (4.325,##1)
+        {\includegraphics[width=0.92cm,height=0.92cm]{#2/case-study-difference-##2.png}};
+      \node[result digit tile] (qmnist##2) at (5.45,##1)
+        {\includegraphics[width=0.92cm,height=0.92cm]{#2/case-study-qmnist-##2.png}};
+      \ifnum##9=1\relax
+        \node[anchor=north east,font=\tiny\bfseries,result muted]
+          at ([xshift=-1.2pt,yshift=-0.8pt]difference##2.north east)
+          {\textsuperscript{*}};
+      \fi
+
+      \node[font=\scriptsize\bfseries] (predictionleft##2)
+        at (7.28,{##1+0.17}) {##5};
+      \node[font=\scriptsize\bfseries] (predictionright##2)
+        at (7.82,{##1+0.17}) {##6};
+      \draw[-{Stealth[length=3.0pt,width=3.4pt]},line width=#1]
+        ([xshift=1.5pt]predictionleft##2.east) --
+        ([xshift=-1.5pt]predictionright##2.west);
+      \node[font=\scriptsize\itshape,result muted]
+        at (7.55,{##1-0.17}) {##7};
+    \fi
+  }%
+
+  \noindent\begin{tikzpicture}[
+    x=1cm,
+    y=1cm,
+    every node/.style={inner sep=0pt,font=\scriptsize},
+    result muted/.style={text=black!60},
+    result card/.style={
+      draw=black,
+      fill=white,
+      line width=#1,
+      rounded corners=1.5pt
+    },
+    result divider/.style={draw=black!45,line width=#1},
+    result digit tile/.style={
+      draw=black!30,
+      fill=white,
+      line width=#1,
+      inner sep=0pt
+    },
+    result difference tile/.style={
+      draw=none,
+      fill=white,
+      inner sep=0pt
+    }
+  ]
+    \path[use as bounding box] (0,-0.81) rectangle (8.65,10.10);
+
+    \node[anchor=north west,font=\scriptsize\bfseries]
+      at (0,10.08) {QMNIST prediction-agreement criterion};
+    \node[anchor=north west,result muted]
+      at (0,9.70) {MNIST-12 predictions for 10,000 same-index MNIST/QMNIST pairs};
+
+    \pgfmathtruncatemacro{\qmnistpaircount}{10000}
+    \pgfmathtruncatemacro{\qmnistagreementcount}
+      {\qmnistpaircount-\QMNISTChangedCount}
+    \pgfmathtruncatemacro{\qmnistminimumagreementcount}
+      {\qmnistpaircount-\QMNISTChangeLimit}
+    \pgfmathtruncatemacro{\qmnistagreementmargin}
+      {\QMNISTChangeLimit-\QMNISTChangedCount}
+    \pgfmathsetmacro{\qmnistthresholdpercent}
+      {\qmnistminimumagreementcount/\qmnistpaircount*100}
+    \pgfmathsetmacro{\qmnistmarginpercent}
+      {\qmnistagreementmargin/\qmnistpaircount*100}
+
+    \node[font=\scriptsize\bfseries] at (2.20,8.70) {Observed agreement};
+    \node[font=\scriptsize\bfseries] at (6.45,8.70) {Registered minimum};
+    \node[font=\normalsize\bfseries] at (2.20,8.15)
+      {\QMNISTAgreementPercent\%};
+    \node[font=\normalsize\bfseries] at (4.325,8.15) {$\geq$};
+    \node[font=\normalsize] at (6.45,8.15)
+      {\pgfmathprintnumber[fixed,fixed zerofill,precision=2,assume math mode]
+       {\qmnistthresholdpercent}\%};
+    \node[result muted] at (2.20,7.68)
+      {\pgfmathprintnumber[fixed,precision=0,1000 sep={\,},assume math mode]
+       {\qmnistagreementcount}
+       / \pgfmathprintnumber[fixed,precision=0,1000 sep={\,},assume math mode]
+       {\qmnistpaircount} pairs};
+    \node[result muted] at (6.45,7.68)
+      {\pgfmathprintnumber[fixed,precision=0,1000 sep={\,},assume math mode]
+       {\qmnistminimumagreementcount}
+       / \pgfmathprintnumber[fixed,precision=0,1000 sep={\,},assume math mode]
+       {\qmnistpaircount} pairs};
+
+    \node at (4.325,6.93)
+      {\textbf{Criterion met} by \qmnistagreementmargin\ pairs
+       (\pgfmathprintnumber[fixed,precision=2,assume math mode]
+       {\qmnistmarginpercent} pp)};
+
+    \draw[black!45,line width=#1] (0,6.30) -- (8.65,6.30);
+    \node[anchor=north west,font=\scriptsize\bfseries]
+      at (0,5.68) {Changed prediction pairs};
+    \node[anchor=north west,result muted]
+      at (0,5.24)
+      {MNIST-12 predictions for the three changed MNIST/QMNIST pairs};
+    \node[font=\scriptsize\bfseries,result muted] at (3.20,4.45) {MNIST};
+    \node[font=\scriptsize\bfseries,result muted] at (4.325,4.45) {$\Delta$};
+    \node[font=\scriptsize\bfseries,result muted] at (5.45,4.45) {QMNIST};
+
+    \qmnistresultrow{3.39}{1}
+      {\QMNISTPairOneRow}{\QMNISTPairOneTruth}
+      {\QMNISTPairOneMNISTPrediction}{\QMNISTPairOneQMNISTPrediction}
+      {\QMNISTPairOneTransition}{\QMNISTPairOneVisible}{\QMNISTPairOneFootnote}
+    \qmnistresultrow{1.67}{2}
+      {\QMNISTPairTwoRow}{\QMNISTPairTwoTruth}
+      {\QMNISTPairTwoMNISTPrediction}{\QMNISTPairTwoQMNISTPrediction}
+      {\QMNISTPairTwoTransition}{\QMNISTPairTwoVisible}{\QMNISTPairTwoFootnote}
+    \qmnistresultrow{-0.05}{3}
+      {\QMNISTPairThreeRow}{\QMNISTPairThreeTruth}
+      {\QMNISTPairThreeMNISTPrediction}{\QMNISTPairThreeQMNISTPrediction}
+      {\QMNISTPairThreeTransition}{\QMNISTPairThreeVisible}{\QMNISTPairThreeFootnote}
+  \end{tikzpicture}%
+  \endgroup
+}

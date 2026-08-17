@@ -1,0 +1,26 @@
+  \providecommand{\protocolflowgap}{0.44cm}
+  \edef\flowgap{\the\dimexpr\protocolflowgap\relax}
+  \let\branchstem\flowgap
+  \let\branchhookheight\flowgap
+  \def\attemptpadding{0.72cm}
+  \def\attemptlabelspace{0.18cm}
+  \def\phaseverticalpadding{1.5pt}
+  \def\phasehorizontalpadding{4.5pt}
+  \def\stepmark#1#2{\hyperref[#1]{(#2)}}
+  \def\stagemark#1#2{\hyperref[#1]{Stage~#2}}
+  \def\boxtitlegap{1.5pt}
+  \newif\ifphasebandsfilled
+  \phasebandsfilledfalse
+  \def\phasebandheight{\dimexpr\attemptlabelspace+
+    \phaseverticalpadding+\phaseverticalpadding\relax}
+  \def\outerpadding{0.80cm}
+  \pgfmathsetlengthmacro{\halfouterpadding}{0.5*\outerpadding}
+  \pgfmathsetlengthmacro{\phasebreakgap}{2*\flowgap}
+  \pgfmathsetlengthmacro{\longflowgap}{3*\flowgap}
+  \pgfmathsetlengthmacro{\verifyexitgap}{3*\flowgap}
+  \pgfmathsetlengthmacro{\infergap}{3*\flowgap-0.48cm}
+  \let\verifyrowmargin\flowgap
+  \coordinate (inputaxis) at (2.80,0);
+  \coordinate (inputleft) at ([xshift=-2.00cm]inputaxis);
+  \coordinate (resourceaxis) at (15.20,0);
+  \coordinate (figureleftedge) at (-0.60,0);

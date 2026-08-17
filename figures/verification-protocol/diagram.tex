@@ -1,0 +1,57 @@
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+  x=1cm,y=1cm,
+  font=\scriptsize,
+  every path/.style={line width=\protocolstrokewidth},
+  line cap=round,
+  line join=round,
+  >={Stealth[length=1.50mm,width=1.05mm]},
+  control/.style={->,draw=black!85},
+  controlplain/.style={draw=black!85},
+  supply/.style={->,dashed,draw=black!85},
+  produce/.style={->,dashed,draw=black!85},
+  consume/.style={->,dashed,draw=black!85},
+  detail/.style={dotted,draw=black!85},
+  phaseband/.style={draw=black!18,fill=black!4},
+  action/.style={rectangle,rounded corners=1.4pt,draw=black!85,
+    fill=white,align=left,minimum height=0.96cm,text width=4.71cm,
+    inner xsep=7pt,inner ysep=5pt},
+  branchaction/.style={rectangle,rounded corners=1.4pt,draw=black!85,
+    fill=white,align=center,minimum height=0.96cm,text width=1.98cm,
+    inner xsep=6pt,inner ysep=5pt},
+  decision/.style={diamond,aspect=2.40,draw=black!85,fill=white,
+    align=center,minimum width=4.00cm,minimum height=1.40cm,
+    text width=2.50cm,inner sep=0pt},
+  configdecision/.style={decision},
+  sideobj/.style={rectangle,align=left,minimum width=4.00cm,
+    minimum height=0.96cm,text width=3.51cm,
+    inner xsep=7pt,inner ysep=5pt},
+  inputobj/.style={sideobj,draw=black!85,fill=black!10},
+  outputobj/.style={sideobj,dotted,draw=black!85,fill=white},
+  resultobj/.style={sideobj,draw=black!85,fill=black!10},
+  outputinner/.style={draw=black!65,line width=0.25pt},
+  compactoutputobj/.style={outputobj,minimum height=0.72cm,inner ysep=4pt},
+  compactresultobj/.style={resultobj,minimum height=0.72cm,inner ysep=4pt},
+  branchlabel/.style={inner sep=3pt,font=\scriptsize},
+  dependencylabel/.style={inner sep=3pt,font=\scriptsize},
+  flowresource/.style={inner xsep=2pt,inner ysep=1pt,
+    font=\scriptsize},
+  groupregion/.style={draw=black!40,fill=black!4,rounded corners=2pt},
+  loopregion/.style={fill=black!4,rounded corners=2pt},
+  loopoutline/.style={draw=black!40,fill=none,rounded corners=2pt},
+  phaselabel/.style={inner sep=0pt,
+    font=\scriptsize,text=black!65},
+  regionlabel/.style={inner xsep=2pt,inner ysep=0.5pt,
+    font=\scriptsize\bfseries,text=black!85},
+  regionnote/.style={inner xsep=2pt,inner ysep=0.5pt,
+    font=\scriptsize,text=black!85,align=right}
+]
+
+  \input{figures/verification-protocol/layout}
+  \input{figures/verification-protocol/steps}
+  \input{figures/verification-protocol/regions}
+  \input{figures/verification-protocol/resources}
+  \input{figures/verification-protocol/connections}
+  \input{figures/verification-protocol/legend}
+
+\end{tikzpicture}}

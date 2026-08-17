@@ -1,0 +1,115 @@
+  \coordinate (loopwest) at ([xshift=-\attemptpadding]register.west);
+  \coordinate (loopeast) at ([xshift=\attemptpadding]register.east);
+  \coordinate (phase12divider) at
+    ([yshift=\phasebreakgap]register.north);
+  \coordinate (looptop) at
+    ([yshift=\dimexpr\flowgap+\attemptlabelspace\relax]register.north);
+  \coordinate (loopbottom) at ([yshift=-\flowgap]recordclass.south);
+  \coordinate (phase34divider) at
+    ([yshift=-\verifyrowmargin]loopbottom);
+  \coordinate (phase23divider) at
+    ($(register.south)!0.50!(derive.north)$);
+  \coordinate (phase1top) at
+    ([yshift=\outerpadding]bind.north);
+  \coordinate (phase1bottom) at
+    ([yshift=-\phasebandheight]phase1top);
+  \coordinate (phase2bottom) at
+    ([yshift=-\phasebandheight]phase12divider);
+  \coordinate (phase3bottom) at
+    ([yshift=-\phasebandheight]phase23divider);
+  \coordinate (phase4bottom) at
+    ([yshift=-\phasebandheight]phase34divider);
+  \coordinate (phase1center) at ($(phase1top)!0.50!(phase1bottom)$);
+  \coordinate (phase2center) at
+    ($(phase12divider)!0.50!(phase2bottom)$);
+  \coordinate (phase3center) at
+    ($(phase23divider)!0.50!(phase3bottom)$);
+  \coordinate (phase4center) at
+    ($(phase34divider)!0.50!(phase4bottom)$);
+  \begin{scope}[on background layer]
+  \ifphasebandsfilled
+    \filldraw[phaseband]
+      (figureleftedge |- phase1top) rectangle (18.0,0 |- phase1bottom);
+    \filldraw[phaseband]
+      (figureleftedge |- phase12divider) rectangle (18.0,0 |- phase2bottom);
+    \filldraw[phaseband]
+      (figureleftedge |- phase23divider) rectangle (18.0,0 |- phase3bottom);
+    \filldraw[phaseband]
+      (figureleftedge |- phase34divider) rectangle (18.0,0 |- phase4bottom);
+  \else
+    \draw[black!18]
+      (figureleftedge |- phase12divider) -- (18.0,0 |- phase12divider);
+    \draw[black!18]
+      (figureleftedge |- phase23divider) -- (18.0,0 |- phase23divider);
+    \draw[black!18]
+      (figureleftedge |- phase34divider) -- (18.0,0 |- phase34divider);
+  \fi
+  \end{scope}
+  \begin{scope}[on background layer]
+    \node[loopregion,inner sep=0pt,
+      fit=(loopwest)(loopeast)(looptop)(loopbottom)] (attemptregion) {};
+  \ifphasebandsfilled
+    \fill[black!4]
+      (loopwest |- phase23divider) rectangle
+      (loopeast |- phase3bottom);
+  \fi
+  \end{scope}
+  \node[loopoutline,inner sep=0pt,
+    fit=(loopwest)(loopeast)(looptop)(loopbottom)] {};
+
+  \ifphasebandsfilled
+  \fill[black!4]
+    ([xshift=-\protocolstrokewidth]loopwest |- phase23divider) rectangle
+    ([xshift=\protocolstrokewidth]loopwest |- phase3bottom);
+  \fill[black!4]
+    ([xshift=-\protocolstrokewidth]loopeast |- phase23divider) rectangle
+    ([xshift=\protocolstrokewidth]loopeast |- phase3bottom);
+  \draw[black!18]
+    (loopwest |- phase23divider) -- (loopeast |- phase23divider);
+  \draw[black!18]
+    (loopwest |- phase3bottom) -- (loopeast |- phase3bottom);
+  \else
+  \coordinate (phase3atloopwest) at (loopwest |- phase23divider);
+  \coordinate (phase3atloopeast) at (loopeast |- phase23divider);
+  \fill[white]
+    ([xshift=-\protocolstrokewidth,yshift=-\protocolstrokewidth]
+      phase3atloopwest) rectangle
+    ([yshift=\protocolstrokewidth]phase3atloopwest);
+  \fill[black!4]
+    ([yshift=-\protocolstrokewidth]phase3atloopwest) rectangle
+    ([xshift=\protocolstrokewidth,yshift=\protocolstrokewidth]
+      phase3atloopwest);
+  \fill[black!4]
+    ([xshift=-\protocolstrokewidth,yshift=-\protocolstrokewidth]
+      phase3atloopeast) rectangle
+    ([yshift=\protocolstrokewidth]phase3atloopeast);
+  \fill[white]
+    ([yshift=-\protocolstrokewidth]phase3atloopeast) rectangle
+    ([xshift=\protocolstrokewidth,yshift=\protocolstrokewidth]
+      phase3atloopeast);
+  \draw[black!18]
+    ([xshift=-\protocolstrokewidth]phase3atloopwest) --
+    ([xshift=\protocolstrokewidth]phase3atloopeast);
+  \fi
+  \node[phaselabel,anchor=north west]
+    at ([xshift=\phasehorizontalpadding,
+      yshift=-\phasehorizontalpadding]figureleftedge |- phase1top)
+      {\stagemark{stage:protocol-bind}{1}};
+  \node[phaselabel,anchor=north west]
+    at ([xshift=\phasehorizontalpadding,
+      yshift=-\phasehorizontalpadding]figureleftedge |- phase12divider)
+      {\stagemark{stage:protocol-register}{2}};
+  \node[phaselabel,anchor=north west]
+    at ([xshift=\phasehorizontalpadding,
+      yshift=-\phasehorizontalpadding]figureleftedge |- phase23divider)
+      {\stagemark{stage:protocol-verify}{3}};
+  \node[phaselabel,anchor=north west]
+    at ([xshift=\phasehorizontalpadding,
+      yshift=-\phasehorizontalpadding]figureleftedge |- phase34divider)
+      {\stagemark{stage:protocol-report}{4}};
+  \node[regionlabel,anchor=north west,align=left]
+    at ([xshift=4pt,yshift=-4pt]attemptregion.north west)
+    {$\verifyop$};
+  \node[regionnote,anchor=north east]
+    at ([xshift=-4pt,yshift=-4pt]attemptregion.north east)
+    {$c_i$, $i=1,\ldots,n$};

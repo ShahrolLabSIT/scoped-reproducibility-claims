@@ -1,0 +1,56 @@
+  \node[action] (bind) at (9.00,12.00) {
+    {\bfseries\stepmark{step:protocol-bind}{a}\hspace{3pt}%
+      $\bindop$ specifications}\\[\boxtitlegap]
+    choose $\mathcal J$ and bind it to $\mathrm{SRC}$;
+    Eq.~\eqref{eq:bind-procedure}};
+  \node[circle,draw=black!85,fill=black!85,minimum size=3.2pt,inner sep=0pt,
+    above=\flowgap of bind] (start) {};
+  \node[decision,below=\flowgap of bind] (closed)
+    {\stepmark{step:protocol-inputs-bound}{b}\hspace{3pt}%
+      All inputs bound?};
+  \node[action,below=\longflowgap of closed] (register) {
+    {\bfseries\hyperref[step:protocol-register]{$\registerop$ attempt}}\\[\boxtitlegap]
+    record basis; when $\mathcal J=\mathcal I$, check $R$;
+    Eq.~\eqref{eq:register-procedure}};
+  \node[action,below=\phasebreakgap of register] (derive) {
+    {\bfseries\stepmark{step:protocol-realise}{a}\hspace{3pt}%
+      $\realiseop$ attempt}\\[\boxtitlegap]
+    derive $b_r$ and $c_r$; Eq.~\eqref{eq:realise-procedure}};
+  \node[action,below=\flowgap of derive] (assess) {
+    {\bfseries\stepmark{step:protocol-classify}{b}\hspace{3pt}%
+      $\conformop$, $\eligibleop$, and $\classifyop$}\\[\boxtitlegap]
+    assess $P_r$ and $a_r$, then derive $q_r$;
+    Eqs.~\eqref{eq:assessment-checks}--\eqref{eq:classify-procedure}};
+  \node[decision,below=\branchstem of assess] (admissible)
+    {\stepmark{step:protocol-decide}{c}\hspace{3pt}$\decideop$,
+      Eq.~\eqref{eq:decision-procedure}:\\$q_r$ admissible?};
+
+  \node[branchaction,anchor=north] (applydelta) at
+    ([xshift=-1.40cm,
+      yshift=-\dimexpr\branchstem+\branchhookheight\relax]admissible.south)
+    {$d_r=\delta(a_r)$};
+  \node[branchaction,anchor=north] (setbottom) at
+    ([xshift=1.40cm,
+      yshift=-\dimexpr\branchstem+\branchhookheight\relax]admissible.south)
+    {$d_r=\bot$};
+  \coordinate (branchmid) at
+    ($(applydelta.south)!0.5!(setbottom.south)$);
+  \coordinate (merge) at ([yshift=-\branchhookheight]branchmid);
+
+  \node[action,below=\flowgap of merge] (recordclass) {
+    {\bfseries\stepmark{step:protocol-complete-verify}{d}\hspace{3pt}%
+      Complete $\verifyop$}\\[\boxtitlegap]
+    assemble $y_r$ with its justification;
+    Eq.~\eqref{eq:attempt-assessment}};
+  \node[decision,below=\verifyexitgap of recordclass] (hasinfer)
+    {\stepmark{step:protocol-inference-bound}{a}\hspace{3pt}%
+      $\mathcal J=\mathcal I$?};
+  \node[configdecision,anchor=west] (configdone) at
+    (inputleft |- hasinfer)
+    {\stepmark{step:protocol-attempts-collected}{b}\hspace{3pt}%
+      All $n$ per-attempt\\assessments received?};
+  \node[action,below=\infergap of hasinfer] (infer) {
+    {\bfseries\stepmark{step:protocol-infer-report}{c}\hspace{3pt}%
+      $\collectop$, $\inferop$, then $\reportop$}\\[\boxtitlegap]
+    form $\mathcal L$, derive and report $\gamma$;
+    Eqs.~\eqref{eq:collect-procedure}--\eqref{eq:report-procedure}};
