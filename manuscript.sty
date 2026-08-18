@@ -12,7 +12,26 @@
 \usetikzlibrary{arrows.meta,backgrounds,calc,fit,matrix,positioning,shapes.geometric}
 \RequirePackage{tcolorbox}
 \RequirePackage[unicode,hidelinks,bookmarks=false]{hyperref}
-\RequirePackage[backend=biber,style=ieee,sorting=none]{biblatex}
+% Keep IEEE reference formatting stable across TeX Live releases.  Debian
+% Bookworm ships biblatex-ieee 1.3f, whose defaults predate the current IEEE
+% rules used by newer TeX Live releases.
+\RequirePackage[
+  backend=biber,
+  bibstyle=ieee,
+  citestyle=numeric-verb,
+  sorting=none,
+  sortcites=true,
+  minnames=1,
+  maxcitenames=2,
+  maxbibnames=6,
+  urldate=long
+]{biblatex}
+\DefineBibliographyStrings{english}{
+  urlseen={Accessed\addcolon},
+  june={Jun\adddot},
+  july={Jul\adddot},
+  september={Sep\adddot}
+}
 
 % Stable metadata for the fixed-container publication comparison.
 \ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
